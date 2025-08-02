@@ -27,17 +27,17 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
 
   // Check for error from URL params (e.g., redirected from NextAuth)
-  const errorParam = searchParams.get("error");
+  // const errorParam = searchParams.get("error");
 
-  useEffect(() => {
-    if (errorParam) {
-      toast.toast({
-        title: "Login Failed",
-        description: decodeURIComponent(errorParam),
-        // variant: "destructive",
-      });
-    }
-  }, [errorParam]);
+  // useEffect(() => {
+  //   if (errorParam) {
+  //     toast.toast({
+  //       title: "Login Failed",
+  //       description: decodeURIComponent(errorParam),
+  //       variant: "destructive",
+  //     });
+  //   }
+  // }, [errorParam]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -69,22 +69,7 @@ export default function LoginPage() {
     }
   };
 
-  const loginAsRole = (role: string) => {
-    switch (role) {
-      case "admin":
-        setEmail("admin@vtuadmin.com");
-        setPassword("admin123");
-        break;
-      case "manager":
-        setEmail("manager@vtuadmin.com");
-        setPassword("manager123");
-        break;
-      case "support":
-        setEmail("support@vtuadmin.com");
-        setPassword("support123");
-        break;
-    }
-  };
+
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-gray-50">
@@ -96,7 +81,7 @@ export default function LoginPage() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">
-            Payonce Dashboard
+            Almaleek
           </CardTitle>
           <CardDescription>
             Enter your credentials to access your account
@@ -123,9 +108,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-sm text-blue-600 hover:underline">
-                  Forgot password?
-                </a>
+                
               </div>
               <Input
                 id="password"
@@ -136,56 +119,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="pt-2">
-              <Tabs defaultValue="admin">
-                <div className="flex justify-center mb-2">
-                  <p className="text-sm text-muted-foreground">
-                    Test accounts:
-                  </p>
-                </div>
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger
-                    value="admin"
-                    onClick={() => loginAsRole("admin")}
-                  >
-                    Admin
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="manager"
-                    onClick={() => loginAsRole("manager")}
-                  >
-                    Manager
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="support"
-                    onClick={() => loginAsRole("support")}
-                  >
-                    Support
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="admin" className="mt-2">
-                  <div className="text-xs text-muted-foreground">
-                    <p>Email: admin@vtuadmin.com</p>
-                    <p>Password: admin123</p>
-                    <p className="mt-1">Full access to all features</p>
-                  </div>
-                </TabsContent>
-                <TabsContent value="manager" className="mt-2">
-                  <div className="text-xs text-muted-foreground">
-                    <p>Email: manager@vtuadmin.com</p>
-                    <p>Password: manager123</p>
-                    <p className="mt-1">Limited access to settings</p>
-                  </div>
-                </TabsContent>
-                <TabsContent value="support" className="mt-2">
-                  <div className="text-xs text-muted-foreground">
-                    <p>Email: support@vtuadmin.com</p>
-                    <p>Password: support123</p>
-                    <p className="mt-1">View-only access to most features</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
+          
           </CardContent>
           <CardFooter>
             <Button

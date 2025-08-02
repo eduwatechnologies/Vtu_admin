@@ -6,7 +6,6 @@ import { DashboardHeader } from "@/components/dashboard-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CommissionSettings } from "@/components/commission-settings";
 import { ServiceSettings } from "@/components/service-settings";
-import { ApiSettings } from "@/app/payment/components/paymentForm";
 import { GeneralSettings } from "@/components/general-settings";
 
 export default function SettingsPage() {

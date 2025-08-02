@@ -112,7 +112,7 @@ export function AppSidebar() {
             <Zap className="h-4 w-4" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold">VTU Platform</span>
+            <span className="text-sm font-semibold">Almaleek Top Up</span>
             <span className="text-xs text-muted-foreground">Dashboard</span>
           </div>
         </div>
@@ -148,14 +148,10 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="bg-white border-t">
-        <div className="px-3 pb-3 space-y-2">
+        <div className="px-3 ">
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={pathname === "/help"}>
-                <Link href="/help" className="flex items-center gap-3">
-                  <HelpCircle className="w-4 h-4 " />
-                  <span className="text-sm">Help & Support</span>
-                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
