@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import userReducer from "./slices/userSlice";
 import transactionReducer from "./slices/transactionSlice";
-import serviceReducer from "./slices/serviceSlice";
+import serviceReducer from "./slices/service/serviceSlice";
 import settingReducer from "./slices/settingSlice";
 import staffReducer from "./slices/staffSlice";
 import networkProviders from "./slices/networkProviderSlice";
