@@ -13,6 +13,7 @@ import {
   updateService,
   updateServicePlan,
   updateSubService,
+  switchProvider,
 } from "./serviceThunk";
 
 interface VtuState {
@@ -23,6 +24,8 @@ interface VtuState {
   searchQuery: string;
   isLoading: boolean;
   error: string | null;
+  list: any[];
+  loading: boolean;
 }
 
 const initialState: VtuState = {
@@ -30,9 +33,11 @@ const initialState: VtuState = {
   filteredServices: [],
   selectedService: null,
   selectedSubService: null,
+  list: [],
   searchQuery: "",
   isLoading: false,
   error: null,
+  loading: false,
 };
 
 const serviceSlice = createSlice({
@@ -206,6 +211,23 @@ const serviceSlice = createSlice({
         }
       })
       .addCase(deleteServicePlan.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(switchProvider.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(switchProvider.fulfilled, (state, action) => {
+        state.loading = false;
+        // update the subservice in the list
+        const index = state.list.findIndex(
+          (sub) => sub._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      })
+      .addCase(switchProvider.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload as string;
       });
   },

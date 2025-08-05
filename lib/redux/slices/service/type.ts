@@ -1,13 +1,16 @@
 export interface ServicePlan {
-  _id: string;
+  _id?: string;
+  id: string;
   subServiceId: string;
   name: string;
   category?: string;
   ourPrice: number;
+  network?: string;
+  serviceType: string;
   validity?: string;
   active: boolean;
-  createdAt: string;
-  updatedAt: string;
+  easyaccessId?: string;
+  autopilotId?: string;
 }
 
 export interface SubService {

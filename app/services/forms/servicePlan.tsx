@@ -6,25 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useAppDispatch } from "@/lib/redux/hooks";
+import {
+  addServicePlan,
+  updateServicePlan,
+} from "@/lib/redux/slices/service/serviceThunk";
+import { ServicePlan } from "@/lib/redux/slices/service/type";
 
 interface ServicePlanFormProps {
   subServiceId: string;
-  initialValues?: {
-    _id?: string;
-    name: string;
-    ourPrice: number;
-    validity: string;
-    category: string;
-    autopilotId?: string;
-    network?: string;
-    active: boolean;
-  };
+  initialValues?: Partial<ServicePlan>;
   onSubmitSuccess?: () => void;
 }
 
-const servicePlanValidation = Yup.object().shape({
+const servicePlanSchema = Yup.object().shape({
   name: Yup.string().required("Plan name is required"),
   ourPrice: Yup.number().required("Price is required"),
+  serviceType: Yup.string().required("ServiceType is required"),
+  network: Yup.string().required("network is required"),
   validity: Yup.string().required("Validity is required"),
   category: Yup.string().required("Category is required"),
   active: Yup.boolean(),
@@ -37,30 +35,66 @@ export function ServicePlanForm({
     ourPrice: 0,
     validity: "",
     category: "",
-    autopilotId: "",
+    serviceType: "",
     network: "",
+    autopilotId: "",
+    easyaccessId: "",
+
     active: true,
   },
   onSubmitSuccess,
 }: ServicePlanFormProps) {
   const dispatch = useAppDispatch();
+  console.log(subServiceId, "the id");
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={servicePlanValidation}
+      validationSchema={servicePlanSchema}
       enableReinitialize
       onSubmit={async (values, { setSubmitting }) => {
         try {
           if (!values._id) {
-            // dispatch addServicePlan here
-            console.log("Creating plan:", values);
+            // CREATE
+            await dispatch(
+              addServicePlan({
+                subServiceId: subServiceId,
+                payload: {
+                  name: values.name!,
+                  ourPrice: values.ourPrice!,
+                  validity: values.validity!,
+                  category: values.category!,
+                  serviceType: values.serviceType || "",
+                  network: values.network || "",
+                  autopilotId: values.autopilotId || "",
+                  easyaccessId: values.easyaccessId || "",
+                  active: values.active ?? true,
+                },
+              })
+            );
           } else {
-            console.log("Updating plan:", values);
+            // UPDATE
+            await dispatch(
+              updateServicePlan({
+                id: values._id,
+                data: {
+                  name: values.name,
+                  ourPrice: values.ourPrice,
+                  validity: values.validity,
+                  category: values.category,
+                  network: values.network,
+                  autopilotId: values.autopilotId,
+                  easyaccessId: values.easyaccessId,
+                  active: values.active,
+                },
+              })
+            );
           }
+
           setSubmitting(false);
           onSubmitSuccess?.();
-        } catch {
+        } catch (err) {
+          console.error("Failed to submit plan:", err);
           setSubmitting(false);
         }
       }}
@@ -90,22 +124,97 @@ export function ServicePlanForm({
           <div>
             <label className="block font-medium">Validity</label>
             <Field as={Input} name="validity" />
+            <ErrorMessage
+              name="validity"
+              component="div"
+              className="text-red-500 text-sm"
+            />
           </div>
 
           <div>
             <label className="block font-medium">Category</label>
             <Field as={Input} name="category" />
+            <ErrorMessage
+              name="category"
+              component="div"
+              className="text-red-500 text-sm"
+            />
+          </div>
+          <div className="flex justify-between space-x-3 items-center">
+            <div>
+              <label className="block font-medium">Service Type</label>
+              <Field
+                as="select"
+                name="serviceType"
+                className="w-full border p-2 rounded"
+              >
+                {/* <option value="">Select Service Type</option> */}
+                <option value="data">Data</option>
+                <option value="airtime">Airtime</option>
+                <option value="cable_tv">Cable TV</option>
+                <option value="electricity">Electricity</option>
+                <option value="exam_pin">Exam Pin</option>
+              </Field>
+              <ErrorMessage
+                name="serviceType"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            {/* Network (Dropdown) */}
+            <div>
+              <label className="block font-medium">Network</label>
+              <Field
+                as="select"
+                name="network"
+                className="w-full border p-2 rounded"
+              >
+                <option value="">Select Network</option>
+                <option value="01">MTN</option>
+                <option value="02">Airtel</option>
+                <option value="03">GLO</option>
+                <option value="04">9Mobile</option>
+              </Field>
+              <ErrorMessage
+                name="network"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div>
+              <label className="block font-medium">EasyaccessId</label>
+              <Field as={Input} name="easyaccessId" />
+              <ErrorMessage
+                name="easyaccessId"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">AutopilotId</label>
+              <Field as={Input} name="autopilotId" />
+              <ErrorMessage
+                name="autopilotId"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
             <Switch
               checked={values.active}
-              onCheckedChange={(v) => setFieldValue("active", v)}
+              onCheckedChange={(checked) => setFieldValue("active", checked)}
             />
             <span>Active</span>
           </div>
 
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             {values._id ? "Update Plan" : "Create Plan"}
           </Button>
         </Form>

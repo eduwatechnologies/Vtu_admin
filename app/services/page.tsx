@@ -33,19 +33,29 @@ import {
   addService,
   addSubService,
   deleteService,
+  deleteServicePlan,
+  deleteSubService,
   fetchServices,
   toggleSubServiceStatus,
   updateService,
+  updateSubService,
 } from "@/lib/redux/slices/service/serviceThunk";
 import { setServiceSearchQuery } from "@/lib/redux/slices/service/serviceSlice";
 import { SubServiceForm } from "./forms/subService";
 import { useToast } from "@/hooks/use-toast";
+import { ServicePlanForm } from "./forms/servicePlan";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
 
 export default function ServicesPage() {
   const toast = useToast();
   const dispatch = useAppDispatch();
+
   const { filteredServices, isLoading, error } = useAppSelector(
     (state) => state.services
+  );
+  const subServiceId = useSelector(
+    (state: RootState) => state.services.selectedSubService?._id
   );
 
   useEffect(() => {
@@ -68,14 +78,17 @@ export default function ServicesPage() {
   const [openDialogForService, setOpenDialogForService] = useState<
     string | null
   >(null);
-  const [newSubName, setNewSubName] = useState("");
-  const [newSubProvider, setNewSubProvider] = useState("");
-
   const [openServiceDialog, setOpenServiceDialog] = useState(false);
+  const [openDialogForPlan, setOpenDialogForPlan] = useState<string | null>(
+    null
+  );
+
   const [newServiceName, setNewServiceName] = useState("");
   const [newServiceType, setNewServiceType] = useState("airtime");
   const [newServiceDescription, setNewServiceDescription] = useState("");
   const [selectedService, setSelectedService] = useState<any | null>(null);
+  const [editingSubservice, setEditingSubservice] = useState<any | null>(null);
+  const [editingPlan, setEditingPlan] = useState<any | null>(null);
 
   useEffect(() => {
     dispatch(fetchServices());
@@ -98,21 +111,28 @@ export default function ServicesPage() {
     dispatch(toggleSubServiceStatus(subId));
   };
 
-  const handleAddSubService = (serviceId: string) => {
-    if (!newSubName || !newSubProvider) return;
-    dispatch(
-      addSubService({
-        name: newSubName,
-        provider: newSubProvider,
-        serviceId,
-        code: newSubName.toLowerCase().replace(/\s+/g, "-"),
-        status: true,
-        description: "",
-      })
-    );
-    setNewSubName("");
-    setNewSubProvider("");
-    setOpenDialogForService(null);
+  const handleEditSubService = (sub: any) => {
+    setEditingSubservice(sub);
+    setOpenDialogForService(sub.serviceId);
+  };
+
+  const handleDeleteSubService = (subserviceId: string) => {
+    dispatch(deleteSubService(subserviceId));
+  };
+
+  const handleAddPlan = (subServiceId: string) => {
+    console.log("Service ID:", subServiceId);
+    setEditingPlan(null);
+    setOpenDialogForPlan(subServiceId);
+  };
+
+  const handleEditPlan = (plan: any) => {
+    setEditingPlan(plan);
+    setOpenDialogForPlan(plan.subServiceId); // make sure this exists
+  };
+
+  const handleDeleteServicePlan = (id: string) => {
+    dispatch(deleteServicePlan(id));
   };
 
   return (
@@ -153,7 +173,7 @@ export default function ServicesPage() {
                     <TableHead></TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
+                    {/* <TableHead>Status</TableHead> */}
                     <TableHead>Description</TableHead>
                     <TableHead className="text-center">Subservices</TableHead>
                     <TableHead className="text-center">Actions</TableHead>
@@ -178,9 +198,9 @@ export default function ServicesPage() {
                             {service.name}
                           </TableCell>
                           <TableCell>{service.type}</TableCell>
-                          <TableCell>
+                          {/* <TableCell>
                             <Switch checked={service.status} disabled />
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell>{service.description || "-"}</TableCell>
                           <TableCell className="text-center">
                             {service?.subServices?.length}
@@ -238,11 +258,13 @@ export default function ServicesPage() {
                                   <SubServicesTable
                                     subServices={service.subServices}
                                     expandedSubServiceId={expandedSubServiceId}
-                                    onToggleSubService={toggleExpandSubService}
+                                    onToggleSubService={setExpandedSubServiceId}
                                     onToggleStatus={handleToggleStatus}
-                                    onAddPlan={(sub: any) =>
-                                      console.log("Add plan", sub)
-                                    }
+                                    onDelete={handleDeleteSubService}
+                                    onEdit={handleEditSubService}
+                                    onAddPlan={handleAddPlan}
+                                    onEditPlan={handleEditPlan}
+                                    onDeletePlan={handleDeleteServicePlan}
                                   />
                                 </div>
                               </div>
@@ -322,15 +344,41 @@ export default function ServicesPage() {
 
           <FormDialog
             open={!!openDialogForService}
-            onOpenChange={() => setOpenDialogForService(null)}
-            title="Add Subservice"
+            onOpenChange={() => {
+              setOpenDialogForService(null);
+              setEditingSubservice(null);
+            }}
+            title={editingSubservice ? "Edit Subservice" : "Add Subservice"}
           >
             {openDialogForService && (
               <SubServiceForm
                 serviceId={openDialogForService}
+                initialValues={editingSubservice ?? undefined} // ✅ fix here
                 onSubmitSuccess={() => {
-                  setOpenDialogForService(null); // close modal on success
+                  setOpenDialogForService(null);
+                  setEditingSubservice(null);
                 }}
+              />
+            )}
+          </FormDialog>
+
+          <FormDialog
+            open={!!openDialogForPlan}
+            onOpenChange={() => {
+              setOpenDialogForPlan(null);
+              setEditingPlan(null);
+            }}
+            title={editingPlan ? "Edit Service Plan" : "Add Service Plan"}
+          >
+            {openDialogForPlan && (
+              <ServicePlanForm
+                subServiceId={openDialogForPlan}
+                initialValues={editingPlan ?? undefined}
+                onSubmitSuccess={() => {
+                  setOpenDialogForPlan(null);
+                  setEditingPlan(null);
+                }}
+                // onDelete={() => handleDeleteServicePlan(editingPlan?._id)}
               />
             )}
           </FormDialog>

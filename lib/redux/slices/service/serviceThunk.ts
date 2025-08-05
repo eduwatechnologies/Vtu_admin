@@ -32,6 +32,25 @@ export const toggleSubServiceStatus = createAsyncThunk(
   }
 );
 
+// Async thunk
+export const switchProvider = createAsyncThunk(
+  "subservices/switchProvider",
+  async (
+    { id, provider }: { id: string; provider: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const res = await axiosInstance.patch(
+        `/subservices/${id}/switch-provider`,
+        { provider }
+      );
+      return res.data.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // Add a new service
 export const addService = createAsyncThunk(
   "service/addService",
@@ -48,6 +67,36 @@ export const addService = createAsyncThunk(
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
         err.response?.data?.msg || "Failed to add service"
+      );
+    }
+  }
+);
+
+// Update a service
+export const updateService = createAsyncThunk(
+  "service/updateService",
+  async ({ id, data }: { id: string; data: Partial<Service> }, thunkAPI) => {
+    try {
+      const res = await axiosInstance.put(`/services/${id}`, data);
+      return res.data.data as Service;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.msg || "Failed to update service"
+      );
+    }
+  }
+);
+
+// Delete a service
+export const deleteService = createAsyncThunk(
+  "service/deleteService",
+  async (id: string, thunkAPI) => {
+    try {
+      await axiosInstance.delete(`/services/${id}`);
+      return id;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.msg || "Failed to delete service"
       );
     }
   }
@@ -104,45 +153,29 @@ export const deleteSubService = createAsyncThunk(
   }
 );
 
-// Update a service
-export const updateService = createAsyncThunk(
-  "service/updateService",
-  async ({ id, data }: { id: string; data: Partial<Service> }, thunkAPI) => {
-    try {
-      const res = await axiosInstance.put(`/services/${id}`, data);
-      return res.data.data as Service;
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to update service"
-      );
-    }
-  }
-);
-
-// Delete a service
-export const deleteService = createAsyncThunk(
-  "service/deleteService",
-  async (id: string, thunkAPI) => {
-    try {
-      await axiosInstance.delete(`/services/${id}`);
-      return id;
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to delete service"
-      );
-    }
-  }
-);
-
 // Add a new service plan
 export const addServicePlan = createAsyncThunk(
   "service/addServicePlan",
   async (
-    planData: Omit<ServicePlan, "_id" | "createdAt" | "updatedAt">,
+    {
+      subServiceId,
+      payload,
+    }: {
+      subServiceId: string;
+      payload: Omit<
+        ServicePlan,
+        "id" | "createdAt" | "updatedAt" | "subServiceId"
+      >;
+    },
     thunkAPI
   ) => {
     try {
-      const res = await axiosInstance.post("/serviceplans", planData);
+      // ✅ Add subServiceId to the body
+      const res = await axiosInstance.post(`/plans`, {
+        ...payload,
+        subServiceId,
+      });
+
       return res.data.data as ServicePlan;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
@@ -160,7 +193,7 @@ export const updateServicePlan = createAsyncThunk(
     thunkAPI
   ) => {
     try {
-      const res = await axiosInstance.put(`/serviceplans/${id}`, data);
+      const res = await axiosInstance.put(`/plans/${id}`, data);
       return res.data.data as ServicePlan;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
@@ -175,7 +208,7 @@ export const deleteServicePlan = createAsyncThunk(
   "service/deleteServicePlan",
   async (id: string, thunkAPI) => {
     try {
-      await axiosInstance.delete(`/serviceplans/${id}`);
+      await axiosInstance.delete(`/plans/${id}`);
       return id;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(

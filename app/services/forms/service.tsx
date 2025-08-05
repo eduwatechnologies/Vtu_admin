@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useAppDispatch } from "@/lib/redux/hooks";
-import { addService } from "@/lib/redux/slices/service/serviceSlice";
+import { addService } from "@/lib/redux/slices/service/serviceThunk";
 
 interface ServiceFormProps {
   initialValues?: {
