@@ -71,26 +71,26 @@ const menuItems = [
     icon: Wallet,
   },
 
-  {
-    title: "Staff",
-    url: "/staff",
-    icon: UserCog,
-  },
-  {
-    title: "Roles",
-    url: "/roles",
-    icon: Shield,
-  },
+  // {
+  //   title: "Staff",
+  //   url: "/staff",
+  //   icon: UserCog,
+  // },
+  // {
+  //   title: "Roles",
+  //   url: "/roles",
+  //   icon: Shield,
+  // },
   {
     title: "Settings",
     url: "/settings",
     icon: Settings,
   },
-  {
-    title: "Notifications",
-    url: "/notifications",
-    icon: Bell,
-  },
+  // {
+  //   title: "Notifications",
+  //   url: "/notifications",
+  //   icon: Bell,
+  // },
 ];
 
 export function AppSidebar() {
@@ -105,38 +105,40 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="w-64 bg-white">
-      <SidebarHeader className="bg-white">
-        <div className="flex items-center gap-2 px-2 py-2 bg-white">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Zap className="h-4 w-4" />
+    <Sidebar className="w-64 h-screen bg-[#f9fafb] border-r shadow-sm">
+      <SidebarHeader className="bg-white border-b px-4 py-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-600 text-white">
+            <Zap className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold">Almaleek Top Up</span>
-            <span className="text-xs text-muted-foreground">Dashboard</span>
+            <span className="text-base font-semibold text-gray-800">
+              Almaleek Top Up
+            </span>
+            <span className="text-xs text-gray-500">Admin Dashboard</span>
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="bg-white">
+
+      <SidebarContent className="overflow-y-auto bg-green-200">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((child) => {
                 const isActive = pathname === child.url;
-
                 return (
                   <SidebarMenuItem key={child.title}>
                     <SidebarMenuButton asChild isActive={isActive}>
                       <Link
                         href={child.url}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                          "flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-150 text-sm font-medium",
                           isActive
-                            ? "bg-blue-600/10 border-l-2 border-primary font-medium !text-primary"
-                            : "text-muted-foreground hover:text-primary"
+                            ? "bg-green-100 text-green-700 border-l-4 border-green-500"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-green-700"
                         )}
                       >
-                        <child.icon className="w-6 h-6" />
+                        <child.icon className="w-5 h-5" />
                         <span>{child.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -147,25 +149,20 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="bg-white border-t">
-        <div className="px-3 ">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/help"}>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Button
-                variant="ghost"
-                onClick={onLogout}
-                className="w-full justify-start gap-3 text-sm text-red-500 hover:text-red-600"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
-              </Button>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </div>
+
+      <SidebarFooter className="bg-green-200 border-t px-4 py-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Button
+              variant="ghost"
+              onClick={onLogout}
+              className="w-full justify-start gap-3 text-sm text-red-500 hover:text-red-600"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </Button>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );
