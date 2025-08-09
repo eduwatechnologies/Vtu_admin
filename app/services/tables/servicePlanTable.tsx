@@ -17,6 +17,7 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ServicePlan } from "@/lib/redux/slices/service/type";
+import { ConfirmDeleteDialog } from "@/components/commons/alert/confirm";
 
 export function PlansTable({
   plans,
@@ -61,11 +62,16 @@ export function PlansTable({
                       <DropdownMenuItem onClick={() => onEdit(plan)}>
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem
+                      {/* <DropdownMenuItem
                         onClick={() => onDelete(plan?._id as any)}
                       >
                         Delete
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
+
+                      <ConfirmDeleteDialog
+                        itemName={plan?.name}
+                        onConfirm={() => onDelete(plan?._id as any)}
+                      />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
