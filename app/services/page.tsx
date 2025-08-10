@@ -46,6 +46,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ServicePlanForm } from "./forms/servicePlan";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
+import { CategoryProviderForm } from "./forms/categoryProvider";
 
 export default function ServicesPage() {
   const toast = useToast();
@@ -79,6 +80,7 @@ export default function ServicesPage() {
     string | null
   >(null);
   const [openServiceDialog, setOpenServiceDialog] = useState(false);
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [openDialogForPlan, setOpenDialogForPlan] = useState<string | null>(
     null
   );
@@ -135,6 +137,10 @@ export default function ServicesPage() {
     dispatch(deleteServicePlan(id));
   };
 
+  const handleCategoryAdding = () => {
+    setOpenCategoryDialog(true);
+  };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -157,9 +163,18 @@ export default function ServicesPage() {
               className="max-w-sm"
               onChange={handleSearch}
             />
-            <Button onClick={() => setOpenServiceDialog(true)}>
-              Add Service
-            </Button>
+            <div className=" gap-x-4">
+              <Button
+                onClick={() => setOpenServiceDialog(true)}
+                className="mr-8"
+              >
+                Add Service
+              </Button>
+
+              <Button onClick={() => handleCategoryAdding()}>
+                Data Catgories
+              </Button>
+            </div>
           </div>
 
           {/* Table Section */}
@@ -256,6 +271,7 @@ export default function ServicesPage() {
                                 <h3 className="font-semibold">Subservices</h3>
                                 <div className="border rounded-lg overflow-hidden">
                                   <SubServicesTable
+                                    service={service}
                                     subServices={service.subServices}
                                     expandedSubServiceId={expandedSubServiceId}
                                     onToggleSubService={setExpandedSubServiceId}
@@ -381,6 +397,22 @@ export default function ServicesPage() {
                 // onDelete={() => handleDeleteServicePlan(editingPlan?._id)}
               />
             )}
+          </FormDialog>
+
+          <FormDialog
+            open={!!openCategoryDialog}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setOpenCategoryDialog(false); // Close dialog when user clicks outside or presses ESC
+              }
+            }}
+            title="Add Category"
+          >
+            <CategoryProviderForm
+              onSubmitSuccess={() => {
+                setOpenCategoryDialog(false); // Close after successful submit
+              }}
+            />
           </FormDialog>
         </main>
       </SidebarInset>

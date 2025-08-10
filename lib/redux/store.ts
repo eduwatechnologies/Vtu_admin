@@ -7,6 +7,7 @@ import settingReducer from "./slices/settingSlice";
 import staffReducer from "./slices/staffSlice";
 import networkProviders from "./slices/networkProviderSlice";
 import paymentProviders from "./slices/paymentProviderSlice";
+import categoryProviders from "./slices/categoryProviderSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -17,6 +18,7 @@ export const store = configureStore({
     staff: staffReducer,
     networkProviders: networkProviders,
     paymentProviders: paymentProviders,
+    categoryProviders: categoryProviders,
   },
 });
 
