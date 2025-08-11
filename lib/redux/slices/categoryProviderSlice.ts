@@ -52,14 +52,18 @@ export const createCategoryProvider = createAsyncThunk<
 // 📌 Update category provider
 export const updateCategoryProvider = createAsyncThunk<
   CategoryProvider,
-  { id: string; data: Partial<CategoryProvider> },
+  { id: string; provider: string },
   { rejectValue: string }
->("categoryProvider/update", async ({ id, data }, { rejectWithValue }) => {
+>("categoryProvider/update", async ({ id, provider }, { rejectWithValue }) => {
   try {
-    const res = await axiosInstance.put(`/category-providers/${id}`, data);
-    return res.data;
+    const res = await axiosInstance.put(`/category-providers/${id}`, {
+      provider,
+    });
+    return res.data as CategoryProvider;
   } catch (err: any) {
-    return rejectWithValue(err.response?.data?.error || "Failed to update");
+    return rejectWithValue(
+      err.response?.data?.error || "Failed to update category provider"
+    );
   }
 });
 
