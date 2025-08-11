@@ -5,9 +5,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
-  title: "Payonce Dashboard",
+  title: "Almaleek Dashboard",
   description: "Admin dashboard for VTU services",
-  generator: "v0.dev",
 };
 
 export default function RootLayout({
