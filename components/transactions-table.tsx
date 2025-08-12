@@ -97,7 +97,7 @@ export function TransactionsTable() {
               <TableHead>Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead>Reference</TableHead>
+              {/* <TableHead>Reference</TableHead> */}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -107,17 +107,17 @@ export function TransactionsTable() {
                 <TableCell className="font-medium">
                   TRNS{transaction._id.slice(-3)}
                 </TableCell>
-                <TableCell>{transaction.userId}</TableCell>
-                <TableCell>{transaction.transaction_type}</TableCell>
-                <TableCell>{transaction.product_name}</TableCell>
+                <TableCell>{transaction.userId.firstName}</TableCell>
+                <TableCell>{transaction.service}</TableCell>
+                <TableCell>{transaction.network || "Fund"}</TableCell>
                 <TableCell>{transaction.amount}</TableCell>
                 <TableCell>{getStatusBadge(transaction.status)}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {new Date(transaction.transaction_date).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="font-mono text-xs">
+                {/* <TableCell className="font-mono text-xs">
                   {transaction.request_id}
-                </TableCell>
+                </TableCell> */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -132,12 +132,12 @@ export function TransactionsTable() {
                         <Eye className="mr-2 h-4 w-4" />
                         <span>View Details</span>
                       </DropdownMenuItem>
-                      {transaction.status === "failed" && (
+                      {/* {transaction.status === "failed" && (
                         <DropdownMenuItem>
                           <RotateCcw className="mr-2 h-4 w-4" />
                           <span>Retry Transaction</span>
                         </DropdownMenuItem>
-                      )}
+                      )} */}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

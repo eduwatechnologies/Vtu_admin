@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 import axios from "axios";
 
-// Extend NextAuth types to include accessToken
 declare module "next-auth" {
   interface User {
     accessToken?: string;

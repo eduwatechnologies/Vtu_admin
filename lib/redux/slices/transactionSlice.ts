@@ -8,11 +8,16 @@ import axios from "axios";
 
 interface Transaction {
   _id: string;
-  userId: string;
+  userId: {
+    firstName:string,
+    email:string,
+  };
   transaction_type: string; // previously `type`
   network?: string; // if applicable
   amount: number;
   status: "completed" | "pending" | "failed" | "delivered"; // include "delivered" if used
+  service:string;
+  network: string;
   transaction_date: string; // ISO string from VTpass response
   request_id?: string; // if you still need this for tracking
   response_data: {
