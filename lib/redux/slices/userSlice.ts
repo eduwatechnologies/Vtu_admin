@@ -9,6 +9,7 @@ interface User {
   _id: string;
   firstName: string;
   lastName: string;
+  role: string;
   email: string;
   phone: string;
   balance: string;
@@ -16,6 +17,11 @@ interface User {
   status: "active" | "suspended";
   createdAt: string;
   lastLogin: string;
+  state: string;
+  account: {
+    accountNumber: string;
+    bankName: string;
+  };
 }
 
 interface Wallet {
@@ -25,16 +31,37 @@ interface Wallet {
 
 interface UserState {
   users: User[];
+  transactions: {
+    airtime: any[];
+    data: any[];
+    electricity: any[];
+    cable_tv: any[];
+    wallet: any[];
+    others: any[];
+  };
   wallet: Wallet | null;
   filteredUsers: User[];
   searchQuery: string;
   selectedUser: User | null;
   isLoading: boolean;
   error: string | null;
+  detailLoading: boolean;
+  selectedUserDetail: User | null;
 }
 
 const initialState: UserState = {
   users: [],
+  transactions: {
+    airtime: [],
+    data: [],
+    electricity: [],
+    wallet: [],
+    cable_tv: [],
+
+    others: [],
+  },
+  detailLoading: false,
+  selectedUserDetail: null,
   wallet: null,
   filteredUsers: [],
   searchQuery: "",
@@ -123,6 +150,19 @@ export const updateStatus = createAsyncThunk(
       return rejectWithValue(
         err.response?.data?.message || "Failed to toggle status"
       );
+    }
+  }
+);
+
+// Add to your imports at top
+export const fetchUserDetail = createAsyncThunk(
+  "users/fetchUserDetail",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get(`/auth/userInfo/${userId}`);
+      return res.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data || { message: err.message });
     }
   }
 );
@@ -272,6 +312,26 @@ const userSlice = createSlice({
           (u) => u._id === action.payload.userId
         );
         if (filteredUser) filteredUser.status = action.payload.status;
+      })
+      .addCase(fetchUserDetail.pending, (state) => {
+        state.detailLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserDetail.fulfilled, (state, action) => {
+        state.detailLoading = false;
+        state.selectedUserDetail = action.payload.user;
+        state.transactions = action.payload.transactions || {
+          airtime: [],
+          data: [],
+          electricity: [],
+          wallet: [],
+          cable_tv: [],
+          others: [],
+        };
+      })
+      .addCase(fetchUserDetail.rejected, (state, action) => {
+        state.detailLoading = false;
+        // state.error = action.payload?.message as any|| "Failed to fetch user details";
       });
   },
 });

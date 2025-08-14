@@ -9,15 +9,15 @@ import axios from "axios";
 interface Transaction {
   _id: string;
   userId: {
-    firstName:string,
-    email:string,
+    firstName: string;
+    email: string;
   };
   transaction_type: string; // previously `type`
   network?: string; // if applicable
   amount: number;
   status: "completed" | "pending" | "failed" | "delivered"; // include "delivered" if used
-  service:string;
-  network: string;
+  raw_response: string;
+  service: string;
   transaction_date: string; // ISO string from VTpass response
   request_id?: string; // if you still need this for tracking
   response_data: {
@@ -99,7 +99,7 @@ const transactionSlice = createSlice({
         // Filter by user
         if (
           state.currentFilter.user &&
-          !transaction.userId
+          !transaction.userId.email
             .toLowerCase()
             .includes(state.currentFilter.user.toLowerCase())
         ) {

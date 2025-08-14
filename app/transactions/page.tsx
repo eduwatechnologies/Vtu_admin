@@ -63,18 +63,9 @@ export default function TransactionsPage() {
 
           <Card>
             <CardContent className="pt-6">
-              <div className="grid gap-4 md:grid-cols-5">
-                <div className="space-y-2">
-                  <Label htmlFor="user">User</Label>
-                  <Input
-                    id="user"
-                    placeholder="Search by user"
-                    value={currentFilter.user}
-                    onChange={(e) => handleFilterChange("user", e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
+              <div className="flex flex-wrap gap-4 items-end">
+                {/* Transaction Type */}
+                <div className="flex-1 min-w-[150px]">
                   <Label htmlFor="type">Transaction Type</Label>
                   <Select
                     value={currentFilter.type}
@@ -86,16 +77,15 @@ export default function TransactionsPage() {
                     <SelectContent>
                       <SelectItem value="all">All Types</SelectItem>
                       <SelectItem value="airtime">Airtime</SelectItem>
-                      <SelectItem value="data-bundle">Data Bundle</SelectItem>
-                      <SelectItem value="bill-payment">Bill Payment</SelectItem>
-                      <SelectItem value="wallet-funding">
-                        Wallet Funding
-                      </SelectItem>
+                      <SelectItem value="data">Data Bundle</SelectItem>
+                      <SelectItem value="electricity">Bill Payment</SelectItem>
+                      <SelectItem value="wallet">Wallet Funding</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                {/* Status */}
+                <div className="flex-1 min-w-[150px]">
                   <Label htmlFor="status">Status</Label>
                   <Select
                     value={currentFilter.status}
@@ -108,14 +98,14 @@ export default function TransactionsPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="success">Success</SelectItem>
                       <SelectItem value="failed">Failed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                {/* Start Date */}
+                <div className="flex-1 min-w-[150px]">
                   <Label>Start Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -145,7 +135,8 @@ export default function TransactionsPage() {
                   </Popover>
                 </div>
 
-                <div className="space-y-2">
+                {/* End Date */}
+                <div className="flex-1 min-w-[150px]">
                   <Label>End Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -172,19 +163,20 @@ export default function TransactionsPage() {
                     </PopoverContent>
                   </Popover>
                 </div>
-              </div>
 
-              <div className="mt-4 flex justify-end">
-                <Button
-                  variant="outline"
-                  onClick={resetFilters}
-                  className="mr-2 text-blue-600 border-blue-600 hover:bg-blue-50"
-                >
-                  Reset Filters
-                </Button>
-                <Button className="text-white bg-blue-600 hover:bg-blue-700">
-                  Apply Filters
-                </Button>
+                {/* Buttons */}
+                <div className="flex gap-2 mt-4 flex-wrap">
+                  <Button
+                    variant="outline"
+                    onClick={resetFilters}
+                    className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                  >
+                    Reset Filters
+                  </Button>
+                  <Button className="text-white bg-blue-600 hover:bg-blue-700">
+                    Apply Filters
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

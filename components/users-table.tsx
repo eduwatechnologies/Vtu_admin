@@ -44,6 +44,7 @@ import {
   Wallet,
   Key,
   Lock,
+  User,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import {
@@ -57,6 +58,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { RootState } from "@/lib/redux/store";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export function UsersTable() {
   const dispatch = useAppDispatch();
@@ -70,6 +72,7 @@ export function UsersTable() {
   );
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [resetType, setResetType] = useState<"pin" | "password">("pin");
+  const router = useRouter();
 
   const selectedUser = filteredUsers.find(
     (user) => user._id === selectedUserId
@@ -212,7 +215,10 @@ export function UsersTable() {
           </TableHeader>
           <TableBody>
             {filteredUsers.map((user) => (
-              <TableRow key={user._id as any}>
+              <TableRow
+                key={user._id as any}
+                // onClick={() => router.push(`/users/userDetail/${user._id}`)}
+              >
                 <TableCell className="font-medium">
                   USR{user._id.slice(-3)}
                 </TableCell>
@@ -261,6 +267,14 @@ export function UsersTable() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
+
+                      <DropdownMenuItem
+                        onClick={() => router.push(`/users/${user._id}`)}
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        <span>View Detial</span>
+                      </DropdownMenuItem>
+
                       <DropdownMenuItem
                         onClick={() => handleWalletAction(user._id, "credit")}
                       >
