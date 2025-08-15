@@ -228,7 +228,7 @@ export function TransactionsTable() {
         {selectedTx.raw_response && (
           <div>
             <strong>Raw Response:</strong>
-            <pre className="bg-gray-100 p-2 rounded text-xs max-h-48 overflow-auto w-full">
+            <pre className="bg-gray-100 p-2 rounded text-sm max-h-48 overflow-auto w-96">
               {JSON.stringify(
                 typeof selectedTx.raw_response === "string"
                   ? JSON.parse(selectedTx.raw_response)
