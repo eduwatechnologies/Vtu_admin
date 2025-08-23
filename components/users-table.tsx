@@ -148,7 +148,7 @@ export function UsersTable() {
         ).unwrap();
       } else {
         await dispatch(
-          updatePin({ userId: selectedUser._id, newpin: "01110" })
+          updatePin({ userId: selectedUser._id, newpin: "2323" })
         ).unwrap();
       }
 

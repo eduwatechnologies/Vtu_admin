@@ -208,7 +208,7 @@ export function TransactionsTable() {
       </Card>
 
       {/* Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Transaction Details</DialogTitle>
@@ -260,17 +260,105 @@ export function TransactionsTable() {
                   </pre>
                 </div>
               )}
+      {/* Modal for Failed Transaction Details */}
+     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Transaction Details</DialogTitle>
+      <DialogDescription>
+        {selectedTx?.status === "failed"
+          ? "This transaction failed. See error details below."
+          : "Full transaction details"}
+      </DialogDescription>
+    </DialogHeader>
 
-              <p>
-                <strong>Reference No:</strong> {selectedTx.reference_no || "-"}
-              </p>
-            </div>
-          )}
-          <DialogFooter>
-            <Button onClick={closeModal}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    {selectedTx && (
+      <div className="space-y-2 mt-4 text-sm">
+        <p>
+          <strong>Service:</strong> {selectedTx.service}
+        </p>
+        <p>
+          <strong>Status:</strong>{" "}
+          <span
+            className={
+              selectedTx.status === "success"
+                ? "text-green-600"
+                : "text-red-600"
+            }
+          >
+            {selectedTx.status}
+          </span>
+        </p>
+        <p>
+          <strong>Date:</strong>
+          {new Date(selectedTx.transaction_date).toLocaleString()}
+        </p>
+        <p>
+          <strong>Amount:</strong> ₦{selectedTx.amount?.toLocaleString()}
+        </p>
+        {selectedTx.network && (
+          <p>
+            <strong>Network:</strong> {selectedTx.network}
+          </p>
+        )}
+        {selectedTx.mobile_no && (
+          <p>
+            <strong>Mobile No:</strong> {selectedTx.mobile_no}
+          </p>
+        )}
+        {selectedTx.data_type && (
+          <p>
+            <strong>Data Type:</strong> {selectedTx.data_type}
+          </p>
+        )}
+        {selectedTx.previous_balance !== undefined && (
+          <p>
+            <strong>Previous Balance:</strong> ₦
+            {selectedTx.previous_balance?.toLocaleString()}
+          </p>
+        )}
+        {selectedTx.new_balance !== undefined && (
+          <p>
+            <strong>New Balance:</strong> ₦
+            {selectedTx.new_balance?.toLocaleString()}
+          </p>
+        )}
+
+        {selectedTx.message && (
+          <p>
+            <strong>Message:</strong> {selectedTx.message}
+          </p>
+        )}
+
+        {selectedTx.reference_no && (
+          <p>
+            <strong>Reference No:</strong> {selectedTx.reference_no}
+          </p>
+        )}
+
+        {selectedTx.raw_response && (
+          <div>
+            <strong>Raw Response:</strong>
+            <pre className="bg-gray-100 p-2 rounded text-sm max-h-48 overflow-auto w-96">
+              {JSON.stringify(
+                typeof selectedTx.raw_response === "string"
+                  ? JSON.parse(selectedTx.raw_response)
+                  : selectedTx.raw_response,
+                null,
+                2
+              )}
+            </pre>
+          </div>
+        )}
+      </div>
+    )}
+
+    <DialogFooter>
+      <Button onClick={closeModal}>Close</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
     </>
   );
 }
