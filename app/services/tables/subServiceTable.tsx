@@ -28,13 +28,7 @@ import { MoreHorizontal } from "lucide-react";
 import { switchProvider } from "@/lib/redux/slices/service/serviceThunk";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { ConfirmDeleteDialog } from "@/components/commons/alert/confirm";
-import {
-  deleteCategoryProvider,
-  fetchCategoryProviders,
-  updateCategoryProvider,
-} from "@/lib/redux/slices/categoryProviderSlice";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
+
 
 export function SubServicesTable({
   service,
@@ -50,101 +44,14 @@ export function SubServicesTable({
 }: any) {
   const dispatch = useAppDispatch();
 
-  const categoryProviders = useSelector(
-    (state: any) => state.categoryProviders.items
-  );
+const handleProviderChange = (value: string, subId: string) => {
+  dispatch(switchProvider({ id: subId, provider: value }));
 
-  useEffect(() => {
-    dispatch(fetchCategoryProviders());
-  }, []);
+};
 
-  console.log(categoryProviders);
-
-  const handleProviderChange = (value: string, subId: string) => {
-    dispatch(switchProvider({ id: subId, provider: value }));
-  };
 
   return (
     <div className="space-y-8">
-      {service?.type === "data" && (
-        <div className="space-y-8">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Category</TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categoryProviders.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center text-gray-500">
-                    No category providers found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                categoryProviders.map((c: any) => (
-                  <TableRow key={c._id}>
-                    <TableCell>{c.category}</TableCell>
-
-                    {/* Provider Dropdown */}
-                    <TableCell>
-                      <Select
-                        defaultValue={c.provider}
-                        onValueChange={(val) =>
-                          dispatch(
-                            updateCategoryProvider({
-                              id: c?._id,
-                              provider: val as string,
-                            })
-                          )
-                        }
-                      >
-                        <SelectTrigger className="w-[150px]">
-                          <SelectValue placeholder="Select Provider" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="easyaccess">EasyAccess</SelectItem>
-                          <SelectItem value="autopilot">Autopilot</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-
-                    {/* Status Switch */}
-                    <TableCell>
-                      <Switch
-                        checked={c.status}
-                        onCheckedChange={(val) =>
-                          dispatch(
-                            updateCategoryProvider({
-                              ...c,
-                              status: val,
-                            })
-                          )
-                        }
-                      />
-                    </TableCell>
-
-                    <TableCell className="text-right">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => dispatch(deleteCategoryProvider(c._id!))}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      {/* Existing Sub Services Table */}
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/20">
@@ -227,6 +134,7 @@ export function SubServicesTable({
                         subName={sub.name}
                         onEdit={onEditPlan}
                         onDelete={onDeletePlan}
+                        subId={sub._id}
                       />
                     </TableCell>
                   </TableRow>

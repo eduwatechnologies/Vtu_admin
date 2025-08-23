@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Table,
   TableBody,
@@ -18,67 +22,188 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ServicePlan } from "@/lib/redux/slices/service/type";
 import { ConfirmDeleteDialog } from "@/components/commons/alert/confirm";
+import {
+  fetchCategoryProviders,
+  updateCategoryProvider,
+  deleteCategoryProvider,
+} from "@/lib/redux/slices/categoryProviderSlice";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/hooks/use-toast";
+
 
 export function PlansTable({
   plans,
   subName,
   onEdit,
   onDelete,
+  subId,
 }: {
   subName: string;
   plans: ServicePlan[];
   onEdit: (plan: ServicePlan) => void;
   onDelete: (planId: string) => void;
+  subId: string;
 }) {
+  const dispatch = useDispatch();
+  const categoryProviders = useSelector(
+    (state: any) => state.categoryProviders.items
+  );
+
+  useEffect(() => {
+    dispatch(fetchCategoryProviders(subId) as any);
+  }, [dispatch, subId]);
+
   return (
-    <div className="p-4">
-      <h4 className="font-semibold mb-2">{subName} Plans</h4>
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/20">
-              <TableHead>Plan Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {plans.map((plan) => (
-              <TableRow key={plan._id}>
-                <TableCell>{plan.name}</TableCell>
-                <TableCell>{plan.category}</TableCell>
-                <TableCell>{plan.ourPrice}</TableCell>
-                <TableCell>{plan.validity}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => onEdit(plan)}>
-                        Edit
-                      </DropdownMenuItem>
-                      {/* <DropdownMenuItem
-                        onClick={() => onDelete(plan?._id as any)}
+    <div className="space-y-8">
+      {/* Category Providers Table */}
+      {plans.length > 0 && plans[0].serviceType === "data" && (
+        <div>
+          <h4 className="font-semibold mb-2">Category Providers</h4>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Category</TableHead>
+                <TableHead>Provider</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categoryProviders.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-gray-500">
+                    No category providers found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                categoryProviders.map((c: any) => (
+                  <TableRow key={c._id}>
+                    <TableCell>{c.category}</TableCell>
+
+                    {/* Provider Dropdown */}
+                    <TableCell>
+                      <Select
+                        defaultValue={c.provider}
+                        onValueChange={(val) => {
+                          dispatch(
+                            updateCategoryProvider({
+                              ...c,
+                              provider: val,
+                            }) as any
+                          );
+
+                          toast({
+                            title: "Provider Updated",
+                            description: `Provider for ${c.provider} changed to ${val}.`,
+                            duration: 3000,
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="w-[150px]">
+                          <SelectValue placeholder="Select Provider" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="easyaccess">EasyAccess</SelectItem>
+                          <SelectItem value="autopilot">Autopilot</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+
+                    {/* Status Switch */}
+                    <TableCell>
+                      <Switch
+                        checked={c.status}
+                        onCheckedChange={(val) => {
+                          dispatch(
+                            updateCategoryProvider({
+                              ...c,
+                              status: val,
+                            }) as any
+                          );
+
+                          toast({
+                            title: "Provider Status Updated",
+                            description: `Provider for ${c.category} has been ${
+                              val ? "enabled" : "disabled"
+                            }.`,
+                            duration: 3000,
+                          });
+                        }}
+                      />
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() =>
+                          dispatch(deleteCategoryProvider(c._id) as any)
+                        }
                       >
                         Delete
-                      </DropdownMenuItem> */}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
-                      <ConfirmDeleteDialog
-                        itemName={plan?.name}
-                        onConfirm={() => onDelete(plan?._id as any)}
-                      />
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+      {/* Plans Table */}
+      <div>
+        <h4 className="font-semibold mb-2">{subName} Plans</h4>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/20">
+                <TableHead>Plan Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Duration</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {plans.map((plan) => (
+                <TableRow key={plan._id}>
+                  <TableCell>{plan.name}</TableCell>
+                  <TableCell>{plan.category}</TableCell>
+                  <TableCell>{plan.ourPrice}</TableCell>
+                  <TableCell>{plan.validity}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => onEdit(plan)}>
+                          Edit
+                        </DropdownMenuItem>
+
+                        <ConfirmDeleteDialog
+                          itemName={plan.name}
+                          onConfirm={() => onDelete(plan._id!)}
+                        />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

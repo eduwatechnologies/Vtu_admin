@@ -129,29 +129,6 @@ export function UsersTable() {
     }
   };
 
-  // const handleResetSubmit = async () => {
-  //   try {
-  //     if (resetType === "password") {
-  //       dispatch(updatePassword({ userId, newPassword: "1111" })).unwrap();
-  //     } else {
-  //       dispatch(updatePin({ userId, newpin: "12345" })).unwrap();
-  //     }
-  //     toast({
-  //       title: "Wallet Updated",
-  //       description: `₦${amount} ${
-  //         transactionType === "credit" ? "added to" : "removed from"
-  //       } wallet.`,
-  //     });
-  //     setResetDialogOpen(false);
-  //   } catch (error) {
-  //     toast({
-  //       title: "Update failed",
-  //       description: "Could not update wallet balance.",
-  //     });
-  //     console.error(error);
-  //   }
-  // };
-
   const handleResetSubmit = async () => {
     try {
       if (!selectedUser?._id) {
@@ -191,6 +168,16 @@ export function UsersTable() {
     }
   };
 
+  // PAGINATION
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 100;
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const currentUsers = filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -214,11 +201,8 @@ export function UsersTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredUsers.map((user) => (
-              <TableRow
-                key={user._id as any}
-                // onClick={() => router.push(`/users/userDetail/${user._id}`)}
-              >
+            {currentUsers.map((user) => (
+              <TableRow key={user._id as any}>
                 <TableCell className="font-medium">
                   USR{user._id.slice(-3)}
                 </TableCell>
@@ -272,7 +256,7 @@ export function UsersTable() {
                         onClick={() => router.push(`/users/${user._id}`)}
                       >
                         <User className="mr-2 h-4 w-4" />
-                        <span>View Detial</span>
+                        <span>View Detail</span>
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -324,6 +308,28 @@ export function UsersTable() {
           </TableBody>
         </Table>
 
+        {/* PAGINATION CONTROLS */}
+        <div className="flex justify-between items-center mt-4">
+          <Button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            variant="outline"
+          >
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            variant="outline"
+          >
+            Next
+          </Button>
+        </div>
+
+        {/* Wallet Dialog */}
         <Dialog open={walletDialogOpen} onOpenChange={setWalletDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -371,6 +377,7 @@ export function UsersTable() {
           </DialogContent>
         </Dialog>
 
+        {/* Reset Dialog */}
         <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
           <DialogContent>
             <DialogHeader>

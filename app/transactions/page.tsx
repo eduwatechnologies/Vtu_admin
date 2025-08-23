@@ -78,8 +78,8 @@ export default function TransactionsPage() {
                       <SelectItem value="all">All Types</SelectItem>
                       <SelectItem value="airtime">Airtime</SelectItem>
                       <SelectItem value="data">Data Bundle</SelectItem>
-                      <SelectItem value="electricity">Bill Payment</SelectItem>
-                      <SelectItem value="wallet">Wallet Funding</SelectItem>
+                      <SelectItem value="electricity">Electricity</SelectItem>
+                      <SelectItem value="wallet">Wallet</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

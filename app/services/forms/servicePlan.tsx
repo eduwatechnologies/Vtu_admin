@@ -151,7 +151,7 @@ export function ServicePlanForm({
                 {/* <option value="">Select Service Type</option> */}
                 <option value="data">Data</option>
                 <option value="airtime">Airtime</option>
-                <option value="cable_tv">Cable TV</option>
+                <option value="cable">Cable TV</option>
                 <option value="electricity">Electricity</option>
                 <option value="exam_pin">Exam Pin</option>
               </Field>
@@ -175,6 +175,10 @@ export function ServicePlanForm({
                 <option value="02">Airtel</option>
                 <option value="03">GLO</option>
                 <option value="04">9Mobile</option>
+                <option value="05">DSTV</option>
+                <option value="06">GOTV</option>
+                <option value="07">STARTIMES</option>
+                <option value="08">SHOWMAX</option>
               </Field>
               <ErrorMessage
                 name="network"

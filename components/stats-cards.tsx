@@ -7,62 +7,83 @@ import {
   DollarSign,
   Smartphone,
   Users,
+  Tv,
+  Zap,
+  Gamepad,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePermissions } from "@/lib/rbac/permissions";
-import { useEffect } from "react";
-import { fetchUsers } from "@/lib/redux/slices/userSlice";
-import { useSelector } from "react-redux";
-import { useAppDispatch } from "@/lib/redux/hooks";
 
-const stats = [
-  {
-    title: "Total Revenue",
-    value: "₦2,450,000",
-    change: "+12.5%",
-    changeType: "increase" as const,
-    icon: DollarSign,
-    description: "From last month",
-    requiredPermission: "perm_dashboard",
-  },
-  {
-    title: "Total Users",
-    value: "1,234",
-    change: "+8.2%",
-    changeType: "increase" as const,
-    icon: Users,
-    description: "Active users",
-    requiredPermission: "perm_users_view",
-  },
-  {
-    title: "Transactions",
-    value: "45,231",
-    change: "+23.1%",
-    changeType: "increase" as const,
-    icon: CreditCard,
-    description: "This month",
-    requiredPermission: "perm_transactions_view",
-  },
-  {
-    title: "Airtime Sales",
-    value: "₦1,850,000",
-    change: "-2.4%",
-    changeType: "decrease" as const,
-    icon: Smartphone,
-    description: "From last month",
-    requiredPermission: "perm_services_view",
-  },
-];
+import {
+  OverallStats,
+  ServiceBreakdown,
+} from "@/lib/redux/slices/statisticSlice";
 
-export function StatsCards() {
+interface StatsCard {
+  overall: OverallStats;
+  breakdown: ServiceBreakdown[];
+}
+
+export function StatsCards({ overall, breakdown }: StatsCard) {
   const { hasPermission } = usePermissions();
 
-  // Filter stats based on permissions
+  const baseStats = [
+    {
+      title: "Total Account Balance",
+      value: `₦${overall?.totalUserBalance?.toLocaleString() || 0}`,
+      change: "+12.5%",
+      changeType: "increase" as const,
+      icon: DollarSign,
+      description: "From last month",
+      requiredPermission: "perm_dashboard",
+    },
+    {
+      title: "Total Users",
+      value: overall?.totalUsers?.toLocaleString() || "0",
+      change: "+8.2%",
+      changeType: "increase" as const,
+      icon: Users,
+      description: "Active users",
+      requiredPermission: "perm_users_view",
+    },
+    {
+      title: "Transactions",
+      value: overall?.totalTransactions?.toLocaleString() || "0",
+      change: "+23.1%",
+      changeType: "increase" as const,
+      icon: CreditCard,
+      description: "This month",
+      requiredPermission: "perm_transactions_view",
+    },
+  ];
+
+  // Map breakdown dynamically
+  const serviceIcons: Record<string, any> = {
+    airtime: Smartphone,
+    data: Smartphone,
+    tv: Tv,
+    electricity: Zap,
+  };
+
+  const serviceStats = breakdown
+    .filter((b) => b._id.toLowerCase() !== "wallet") // omit wallet sales
+    .map((b) => ({
+      title: `${b._id} Sales`,
+      value: `₦${b.totalAmount?.toLocaleString() || 0}`,
+      change: "-2.4%", // placeholder until you calculate real %
+      changeType: "decrease" as const,
+      icon: serviceIcons[b._id] || CreditCard,
+      description: "From last month",
+      requiredPermission: "perm_services_view",
+    }));
+
+  const stats = [...baseStats, ...serviceStats];
+
+  // ✅ Filter stats based on permissions
   const visibleStats = stats.filter((stat) =>
     hasPermission(stat.requiredPermission)
   );
 
-  // If no stats are visible, show a default stat
   if (visibleStats.length === 0) {
     return (
       <div className="grid gap-4 md:grid-cols-1">

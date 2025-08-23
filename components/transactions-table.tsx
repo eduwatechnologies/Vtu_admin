@@ -37,12 +37,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+// badge formatter
 const getStatusBadge = (status: string) => {
   switch (status) {
-    case "delivered":
-      return <Badge className="bg-green-100 text-green-700">Completed</Badge>;
-    case "pending":
-      return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+    case "success":
+      return <Badge className="bg-green-100 text-green-700">Success</Badge>;
     case "failed":
       return <Badge className="bg-red-100 text-red-700">Failed</Badge>;
     default:
@@ -55,8 +54,23 @@ export function TransactionsTable() {
     (state) => state.transactions
   );
 
-  const [selectedTx, setSelectedTx] = useState<any>(null); // track selected transaction
+  const [selectedTx, setSelectedTx] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const transactionsPerPage = 100;
+
+  const indexOfLast = currentPage * transactionsPerPage;
+  const indexOfFirst = indexOfLast - transactionsPerPage;
+  const currentTransactions = filteredTransactions.slice(
+    indexOfFirst,
+    indexOfLast
+  );
+
+  const totalPages = Math.ceil(
+    filteredTransactions.length / transactionsPerPage
+  );
 
   const openModal = (tx: any) => {
     setSelectedTx(tx);
@@ -99,24 +113,35 @@ export function TransactionsTable() {
               <TableRow>
                 <TableHead>Transaction ID</TableHead>
                 <TableHead>User</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Network/Provider</TableHead>
                 <TableHead>Amount</TableHead>
+                <TableHead>Number</TableHead>
+
                 <TableHead>Status</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTransactions.map((transaction) => (
+              {currentTransactions.map((transaction) => (
                 <TableRow key={transaction._id}>
                   <TableCell className="font-medium">
-                    TRNS{transaction._id.slice(-3)}
+                    TRNS{transaction._id.slice(-5)}
                   </TableCell>
-                  <TableCell>{transaction.userId.firstName}</TableCell>
-                  <TableCell>{transaction.service}</TableCell>
-                  <TableCell>{transaction.network || "Fund"}</TableCell>
+                  <TableCell>
+                    {transaction.userId?.firstName || "N/A"}
+                  </TableCell>
+                  <TableCell>{transaction.userId?.email || "N/A"}</TableCell>
+                  <TableCell className="capitalize">
+                    {transaction.service}
+                  </TableCell>
+                  <TableCell className="capitalize">
+                    {transaction.network || "Fund"}
+                  </TableCell>
                   <TableCell>{transaction.amount}</TableCell>
+                  <TableCell>{transaction.userId.phone}</TableCell>
                   <TableCell>{getStatusBadge(transaction.status)}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(
@@ -146,10 +171,43 @@ export function TransactionsTable() {
               ))}
             </TableBody>
           </Table>
+
+          {/* Pagination controls */}
+          <div className="flex justify-between items-center mt-4">
+            <Button
+              variant="outline"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+            >
+              Previous
+            </Button>
+
+            <div className="flex gap-2 flex-wrap">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? "default" : "outline"}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                )
+              )}
+            </div>
+
+            <Button
+              variant="outline"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              Next
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Modal for Failed Transaction Details */}
+      {/* Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -163,10 +221,21 @@ export function TransactionsTable() {
           {selectedTx && (
             <div className="space-y-2 mt-4">
               <p>
-                <strong>Service:</strong> {selectedTx.service}
+                <strong>UserName:</strong>{" "}
+                {selectedTx.userId.firstName || "N/A"}
               </p>
               <p>
+                <strong>Service:</strong> {selectedTx.service}
+              </p>
+
+              <p>
                 <strong>Status:</strong> {selectedTx.status}
+              </p>
+              <p>
+                <strong>Previous_Balance:</strong> {selectedTx.previous_balance}
+              </p>
+              <p>
+                <strong>New_balance</strong> {selectedTx.new_balance}
               </p>
               <p>
                 <strong>Date:</strong>{" "}

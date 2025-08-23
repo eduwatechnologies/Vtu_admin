@@ -22,13 +22,28 @@ const initialState: CategoryProviderState = {
 };
 
 // 📌 Fetch all category providers
+// export const fetchCategoryProviders = createAsyncThunk<
+//   CategoryProvider[],
+//   string, // subServiceId is the payload
+//   { rejectValue: string }
+// >("categoryProvider/fetchAll", async (subServiceId, { rejectWithValue }) => {
+//   try {
+//     const res = await axiosInstance.get(`/category-providers${subServiceId}`);
+//     return res.data;
+//   } catch (err: any) {
+//     return rejectWithValue(err.response?.data?.error || "Failed to fetch");
+//   }
+// });
+
 export const fetchCategoryProviders = createAsyncThunk<
   CategoryProvider[],
-  void,
+  string, // subServiceId is the payload
   { rejectValue: string }
->("categoryProvider/fetchAll", async (_, { rejectWithValue }) => {
+>("categoryProvider/fetchAll", async (subServiceId, { rejectWithValue }) => {
   try {
-    const res = await axiosInstance.get("/category-providers");
+    const res = await axiosInstance.get(
+      `/category-providers/sub-service/${subServiceId}`
+    );
     return res.data;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.error || "Failed to fetch");

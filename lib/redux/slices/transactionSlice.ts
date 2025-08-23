@@ -11,6 +11,7 @@ interface Transaction {
   userId: {
     firstName: string;
     email: string;
+    phone: string;
   };
   transaction_type: string; // previously `type`
   network?: string; // if applicable
@@ -109,7 +110,7 @@ const transactionSlice = createSlice({
         // Filter by type
         if (
           state.currentFilter.type !== "all" &&
-          transaction.transaction_type !== state.currentFilter.type
+          transaction.service !== state.currentFilter.type
         ) {
           return false;
         }

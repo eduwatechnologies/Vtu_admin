@@ -171,9 +171,9 @@ export default function ServicesPage() {
                 Add Service
               </Button>
 
-              <Button onClick={() => handleCategoryAdding()}>
+              {/* <Button onClick={() => handleCategoryAdding()}>
                 Data Catgories
-              </Button>
+              </Button> */}
             </div>
           </div>
 

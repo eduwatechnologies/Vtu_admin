@@ -19,14 +19,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
 
 type Transaction = {
   createdAt?: string;
   date?: string;
   amount: number | string;
   network?: string;
+  mobile_no?: string;
   transaction_type?: string;
-  status: "Success" | "Pending" | "Failed";
+  status: "success" | "pending" | "failed";
 };
 
 type TransactionTab =
@@ -51,10 +53,27 @@ export default function UserDetailPage() {
     if (id) dispatch(fetchUserDetail(id as string));
   }, [dispatch, id]);
 
-  const getTotals = (txs: Transaction[] = []) => ({
-    totalAmount: txs.reduce((sum, tx) => sum + Number(tx.amount || 0), 0),
-    totalCount: txs.length,
-  });
+  const getTotals = (txs: Transaction[] = []) => {
+    const totalTransaction = txs.length;
+
+    const successTxs = txs.filter((tx) => tx.status === "success");
+    const failedTxs = txs.filter((tx) => tx.status === "failed");
+
+    return {
+      totalTransaction, // all (failed + success)
+      totalAmount: txs.reduce((sum, tx) => sum + Number(tx.amount || 0), 0), // all amounts
+      totalSuccessAmount: successTxs.reduce(
+        (sum, tx) => sum + Number(tx.amount || 0),
+        0
+      ),
+      totalCount: successTxs.length + failedTxs.length,
+      totalFailedAmount: failedTxs.reduce(
+        (sum, tx) => sum + Number(tx.amount || 0),
+        0
+      ),
+      // totalFailedCount: failedTxs.length,
+    };
+  };
 
   const allTxs: Transaction[] = [
     ...(transactions.airtime || []),
@@ -64,7 +83,17 @@ export default function UserDetailPage() {
     ...(transactions.wallet || []),
     ...(transactions.others || []),
   ];
-  const overallTotals = getTotals(allTxs);
+  const { totalSuccessAmount, totalCount } = getTotals(allTxs);
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "success":
+        return <Badge className="bg-green-100 text-green-700">Success</Badge>;
+      case "failed":
+        return <Badge className="bg-red-100 text-red-700">Failed</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
   const renderTable = (data: Transaction[] = []) => (
     <Table>
@@ -73,6 +102,8 @@ export default function UserDetailPage() {
           <TableHead>Date</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Type</TableHead>
+          <TableHead>Phone Number</TableHead>
+
           <TableHead>Status</TableHead>
         </TableRow>
       </TableHeader>
@@ -87,17 +118,9 @@ export default function UserDetailPage() {
               <TableCell>
                 {tx.network?.toUpperCase() || tx.transaction_type}
               </TableCell>
-              <TableCell
-                className={
-                  tx.status === "Success"
-                    ? "text-green-600  font-semibold"
-                    : tx.status === "Pending"
-                    ? "text-yellow-600 font-semibold"
-                    : "text-red-600 font-semibold"
-                }
-              >
-                {tx.status}
-              </TableCell>
+              <TableCell>{tx.mobile_no || "N/A"}</TableCell>
+
+              <TableCell>{getStatusBadge(tx.status)}</TableCell>
             </TableRow>
           ))
         ) : (
@@ -170,8 +193,20 @@ export default function UserDetailPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Last Login</p>
-                    <p>{user.lastLogin || "Never"}</p>
+                    <p>
+                      {user.lastLogin
+                        ? new Date(user.lastLogin).toLocaleString("en-US", {
+                            weekday: "short", // e.g. Mon
+                            year: "numeric",
+                            month: "short", // e.g. Jan
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "Never"}
+                    </p>
                   </div>
+
                   <div>
                     <p className="text-sm text-gray-500">State</p>
                     <p>{user.state}</p>
@@ -184,12 +219,12 @@ export default function UserDetailPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Total Transactions</p>
-                    <p className="font-semibold">{overallTotals.totalCount}</p>
+                    <p className="font-semibold">{totalCount}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Total Spent</p>
                     <p className="text-green-600 font-semibold">
-                      ₦{overallTotals.totalAmount.toLocaleString()}
+                      ₦{totalSuccessAmount.toLocaleString()}
                     </p>
                   </div>
                 </CardContent>
