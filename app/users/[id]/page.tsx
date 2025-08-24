@@ -103,7 +103,8 @@ export default function UserDetailPage() {
           <TableHead>Amount</TableHead>
           <TableHead>Type</TableHead>
           <TableHead>Phone Number</TableHead>
-
+          <TableHead>Previous Balance</TableHead>
+          <TableHead>New Balance</TableHead>
           <TableHead>Status</TableHead>
         </TableRow>
       </TableHeader>
@@ -119,6 +120,8 @@ export default function UserDetailPage() {
                 {tx.network?.toUpperCase() || tx.transaction_type}
               </TableCell>
               <TableCell>{tx.mobile_no || "N/A"}</TableCell>
+              <TableCell>{tx.previous_balance || "N/A"}</TableCell>
+              <TableCell>{tx.new_balance || "N/A"}</TableCell>
 
               <TableCell>{getStatusBadge(tx.status)}</TableCell>
             </TableRow>
