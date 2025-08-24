@@ -140,7 +140,7 @@ export function TransactionsTable() {
                     {transaction.network || "Fund"}
                   </TableCell>
                   <TableCell>{transaction.amount}</TableCell>
-                  <TableCell>{transaction.userId.phone}</TableCell>
+                  <TableCell>{transaction.mobile_no}</TableCell>
                   <TableCell>{getStatusBadge(transaction.status)}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(

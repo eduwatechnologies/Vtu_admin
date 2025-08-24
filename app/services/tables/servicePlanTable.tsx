@@ -94,7 +94,7 @@ export function PlansTable({
                         onValueChange={(val) => {
                           dispatch(
                             updateCategoryProvider({
-                              ...c,
+                              id:c._id,
                               provider: val,
                             }) as any
                           );
