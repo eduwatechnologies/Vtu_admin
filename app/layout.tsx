@@ -5,7 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
-  title: "Almaleek Dashboard",
+  title: "Payonce Dashboard",
   description: "Admin dashboard for VTU services",
 };
 

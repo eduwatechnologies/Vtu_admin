@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { StatsCards } from "@/components/stats-cards";
 import { RecentTransactions } from "@/components/recent-transactions";
@@ -18,72 +17,7 @@ import {
 } from "@/lib/redux/slices/statisticSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
-
-// export default function Dashboard() {
-//   const { data: session } = useSession();
-
-//   const dispatch = useAppDispatch();
-//   const { overall, breakdown, daily, isLoading } = useSelector(
-//     (state: RootState) => state.statistics
-//   );
-
-//   const { transactions } = useSelector(
-//     (state: RootState) => state.transactions
-//   );
-
-//   // Show only 10 most recent
-//   const recentTransactions = [...transactions] // copy so original isn't mutated
-//     .sort(
-//       (a, b) =>
-//         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-//     ) // sort by newest
-//     .slice(0, 10);
-
-//   useEffect(() => {
-//     // ✅ Set user in Redux store from NextAuth session
-//     if (session?.user) {
-//       dispatch(setUser(session.user));
-//     }
-
-//     // ✅ Fetch initial data
-//     dispatch(fetchTransactions());
-//     dispatch(fetchRoles());
-//     dispatch(fetchPermissions());
-
-//     // ✅ Fetch statistics (default: "all")
-//     dispatch(fetchOverallStats("all"));
-//     dispatch(fetchServiceBreakdown("all"));
-//     dispatch(fetchDailyStats("all"));
-//   }, [session, dispatch]);
-
-//   return (
-//     <SidebarProvider>
-//       <AppSidebar />
-//       <SidebarInset>
-//         <DashboardHeader />
-//         <main className="flex-1 space-y-6 p-6 bg-gray-50 dark:bg-gray-900">
-//           <div>
-//             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-//             <p className="text-muted-foreground">
-//               Welcome back! Here's what's happening with your VTU platform.
-//             </p>
-//           </div>
-
-//           {/* ✅ Stats Cards now read from Redux.statistics.overall */}
-//           {overall && <StatsCards overall={overall} breakdown={breakdown} />}
-
-//           <div className="grid gap-6 ">
-//             <div className="lg:col-span-2">
-//               <RecentTransactions transactionData={recentTransactions} />
-//             </div>
-//           </div>
-//         </main>
-//       </SidebarInset>
-//     </SidebarProvider>
-//   );
-// }
-
-// ...
+import { AppSidebar } from "@/components/app-sidebar";
 
 export default function Dashboard() {
   const { data: session } = useSession();
