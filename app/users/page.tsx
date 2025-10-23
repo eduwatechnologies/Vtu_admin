@@ -17,6 +17,7 @@ import {
   setSearchQuery,
 } from "@/lib/redux/slices/userSlice";
 import { toast } from "@/components/ui/use-toast";
+import { AdminLayout } from "@/components/admin-layout";
 
 export default function UsersPage() {
   const dispatch = useAppDispatch();
@@ -31,38 +32,34 @@ export default function UsersPage() {
   };
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <DashboardHeader />
-        <main className="flex-1 space-y-6 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-              <p className="text-muted-foreground">
-                Manage all users on your VTU platform
-              </p>
-            </div>
-            <Button className="text-white bg-blue-600 hover:bg-blue-700">
-              Add New User
-            </Button>
+    <AdminLayout>
+      <main className="flex-1 space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Users</h1>
+            <p className="text-muted-foreground">
+              Manage all users on your VTU platform
+            </p>
           </div>
+          <Button className="text-white bg-blue-600 hover:bg-blue-700">
+            Add New User
+          </Button>
+        </div>
 
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search users..."
-                className="pl-10"
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search users..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
           </div>
+        </div>
 
-          <UsersTable />
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+        <UsersTable />
+      </main>
+    </AdminLayout>
   );
 }

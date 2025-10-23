@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { DashboardHeader } from "@/components/dashboard-header";
 import { StatsCards } from "@/components/stats-cards";
 import { RecentTransactions } from "@/components/recent-transactions";
 import { useAppDispatch } from "@/lib/redux/hooks";
@@ -17,7 +15,7 @@ import {
 } from "@/lib/redux/slices/statisticSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AdminLayout } from "@/components/admin-layout";
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -60,43 +58,38 @@ export default function Dashboard() {
   }, [dispatch, filter]);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <DashboardHeader />
-
-        <main className="flex-1 space-y-6 p-6 bg-gray-50 dark:bg-gray-900">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-muted-foreground">
-                Welcome back! Here's what's happening with your VTU platform.
-              </p>
-            </div>
-
-            {/* 🔥 Filter Dropdown */}
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as any)}
-              className="border rounded-md px-3 py-1 text-sm"
-            >
-              <option value="all">All</option>
-              <option value="day">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-            </select>
+    <AdminLayout>
+      <main className="flex-1 space-y-6 p-6 bg-gray-50 dark:bg-gray-900">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Welcome back! Here's what's happening with your VTU platform.
+            </p>
           </div>
 
-          {overall && <StatsCards overall={overall} breakdown={breakdown} />}
+          {/* 🔥 Filter Dropdown */}
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value as any)}
+            className="border rounded-md px-3 py-1 text-sm"
+          >
+            <option value="all">All</option>
+            <option value="day">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+          </select>
+        </div>
 
-          <div className="grid gap-6">
-            <div className="lg:col-span-2">
-              <RecentTransactions transactionData={recentTransactions} />
-            </div>
+        {overall && <StatsCards overall={overall} breakdown={breakdown} />}
+
+        <div className="grid gap-6">
+          <div className="lg:col-span-2">
+            <RecentTransactions transactionData={recentTransactions} />
           </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </div>
+      </main>
+    </AdminLayout>
   );
 }

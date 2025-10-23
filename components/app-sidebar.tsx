@@ -24,8 +24,8 @@ const menuItems = [
   { title: "Network Providers", url: "/networkProvider", icon: DollarSign },
   { title: "Logs", url: "/logs", icon: BarChart3 },
   { title: "Payments", url: "/payment", icon: Wallet },
-  { title: "Staff", url: "/payment", icon: Wallet },
-  { title: "Role", url: "/payment", icon: Wallet },
+  { title: "Staff", url: "/staff", icon: Wallet },
+  { title: "Role", url: "/role", icon: Wallet },
   { title: "API Documentation", url: "/payment", icon: Wallet },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
@@ -63,7 +63,7 @@ export function AppSidebar() {
                 className={cn(
                   "flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-150 text-sm font-medium",
                   isActive
-                    ? "bg-green-100 text-green-700 border-l-4 border-green-500"
+                    ? "bg-purple-100 text-purple-700 border-l-4 border-green-500"
                     : "text-gray-600 hover:bg-gray-100 hover:text-green-700"
                 )}
               >
