@@ -47,6 +47,7 @@ import { ServicePlanForm } from "./forms/servicePlan";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import { CategoryProviderForm } from "./forms/categoryProvider";
+import { AdminLayout } from "@/components/admin-layout";
 
 export default function ServicesPage() {
   const toast = useToast();
@@ -142,280 +143,270 @@ export default function ServicesPage() {
   };
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <DashboardHeader />
-        <main className="flex-1 space-y-6 p-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Services Monitoring
-            </h1>
-            <p className="text-muted-foreground">
-              Track usage and performance of VTU services
-            </p>
-          </div>
+    <AdminLayout>
+      <main className="flex-1 space-y-6 p-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Services Monitoring
+          </h1>
+          <p className="text-muted-foreground">
+            Track usage and performance of VTU services
+          </p>
+        </div>
 
-          {/* Search bar */}
-          <div className="flex justify-between items-center">
-            <Input
-              placeholder="Search services..."
-              className="max-w-sm"
-              onChange={handleSearch}
-            />
-            <div className=" gap-x-4">
-              <Button
-                onClick={() => setOpenServiceDialog(true)}
-                className="mr-8"
-              >
-                Add Service
-              </Button>
+        {/* Search bar */}
+        <div className="flex justify-between items-center">
+          <Input
+            placeholder="Search services..."
+            className="max-w-sm"
+            onChange={handleSearch}
+          />
+          <div className=" gap-x-4">
+            <Button onClick={() => setOpenServiceDialog(true)} className="mr-8">
+              Add Service
+            </Button>
 
-              {/* <Button onClick={() => handleCategoryAdding()}>
+            {/* <Button onClick={() => handleCategoryAdding()}>
                 Data Catgories
               </Button> */}
-            </div>
           </div>
+        </div>
 
-          {/* Table Section */}
-          {isLoading ? (
-            <p>Loading services...</p>
-          ) : (
-            <div className="border rounded-lg overflow-hidden shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/30">
-                    <TableHead></TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    {/* <TableHead>Status</TableHead> */}
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-center">Subservices</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredServices.map((service) => {
-                    const expanded = expandedServiceId === service._id;
-                    return (
-                      <>
-                        <TableRow
-                          key={service._id}
-                          className="hover:bg-muted/20"
-                        >
-                          <TableCell>
-                            <ExpandToggleButton
-                              expanded={expanded}
-                              onToggle={() => toggleExpandService(service._id)}
-                            />
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {service.name}
-                          </TableCell>
-                          <TableCell>{service.type}</TableCell>
-                          {/* <TableCell>
+        {/* Table Section */}
+        {isLoading ? (
+          <p>Loading services...</p>
+        ) : (
+          <div className="border rounded-lg overflow-hidden shadow-sm">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30">
+                  <TableHead></TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  {/* <TableHead>Status</TableHead> */}
+                  <TableHead>Description</TableHead>
+                  <TableHead className="text-center">Subservices</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredServices.map((service) => {
+                  const expanded = expandedServiceId === service._id;
+                  return (
+                    <>
+                      <TableRow key={service._id} className="hover:bg-muted/20">
+                        <TableCell>
+                          <ExpandToggleButton
+                            expanded={expanded}
+                            onToggle={() => toggleExpandService(service._id)}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {service.name}
+                        </TableCell>
+                        <TableCell>{service.type}</TableCell>
+                        {/* <TableCell>
                             <Switch checked={service.status} disabled />
                           </TableCell> */}
-                          <TableCell>{service.description || "-"}</TableCell>
-                          <TableCell className="text-center">
-                            {service?.subServices?.length}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setSelectedService(service);
-                                    setNewServiceName(service.name);
-                                    setNewServiceType(service.type);
-                                    setNewServiceDescription(
-                                      service.description || ""
-                                    );
-                                    setOpenServiceDialog(true);
-                                  }}
-                                >
-                                  Edit
-                                </DropdownMenuItem>
+                        <TableCell>{service.description || "-"}</TableCell>
+                        <TableCell className="text-center">
+                          {service?.subServices?.length}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedService(service);
+                                  setNewServiceName(service.name);
+                                  setNewServiceType(service.type);
+                                  setNewServiceDescription(
+                                    service.description || ""
+                                  );
+                                  setOpenServiceDialog(true);
+                                }}
+                              >
+                                Edit
+                              </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    dispatch(deleteService(service._id));
-                                  }}
-                                >
-                                  Delete
-                                </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  dispatch(deleteService(service._id));
+                                }}
+                              >
+                                Delete
+                              </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    setOpenDialogForService(service._id)
-                                  }
-                                >
-                                  Add Subservice
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  setOpenDialogForService(service._id)
+                                }
+                              >
+                                Add Subservice
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+
+                      {/* Expandable sub-services table */}
+                      {expanded && service.subServices?.length > 0 && (
+                        <TableRow className="bg-muted/10">
+                          <TableCell colSpan={7}>
+                            <div className="p-4 space-y-6">
+                              <h3 className="font-semibold">Subservices</h3>
+                              <div className="border rounded-lg overflow-hidden">
+                                <SubServicesTable
+                                  service={service}
+                                  subServices={service.subServices}
+                                  expandedSubServiceId={expandedSubServiceId}
+                                  onToggleSubService={setExpandedSubServiceId}
+                                  onToggleStatus={handleToggleStatus}
+                                  onDelete={handleDeleteSubService}
+                                  onEdit={handleEditSubService}
+                                  onAddPlan={handleAddPlan}
+                                  onEditPlan={handleEditPlan}
+                                  onDeletePlan={handleDeleteServicePlan}
+                                />
+                              </div>
+                            </div>
                           </TableCell>
                         </TableRow>
+                      )}
+                    </>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
-                        {/* Expandable sub-services table */}
-                        {expanded && service.subServices?.length > 0 && (
-                          <TableRow className="bg-muted/10">
-                            <TableCell colSpan={7}>
-                              <div className="p-4 space-y-6">
-                                <h3 className="font-semibold">Subservices</h3>
-                                <div className="border rounded-lg overflow-hidden">
-                                  <SubServicesTable
-                                    service={service}
-                                    subServices={service.subServices}
-                                    expandedSubServiceId={expandedSubServiceId}
-                                    onToggleSubService={setExpandedSubServiceId}
-                                    onToggleStatus={handleToggleStatus}
-                                    onDelete={handleDeleteSubService}
-                                    onEdit={handleEditSubService}
-                                    onAddPlan={handleAddPlan}
-                                    onEditPlan={handleEditPlan}
-                                    onDeletePlan={handleDeleteServicePlan}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-
-          <FormDialog
-            open={openServiceDialog}
-            onOpenChange={() => {
-              setOpenServiceDialog(false);
-              setSelectedService(null); // reset when closing
-            }}
-            title={selectedService ? "Edit Service" : "Add Service"}
-          >
-            <div className="space-y-4">
-              <Input
-                placeholder="Service name"
-                value={newServiceName}
-                onChange={(e) => setNewServiceName(e.target.value)}
-              />
-              <Input
-                placeholder="Type (airtime, data, electricity, etc.)"
-                value={newServiceType}
-                onChange={(e) => setNewServiceType(e.target.value)}
-              />
-              <Input
-                placeholder="Description"
-                value={newServiceDescription}
-                onChange={(e) => setNewServiceDescription(e.target.value)}
-              />
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Button
-                onClick={() => {
-                  if (selectedService) {
-                    dispatch(
-                      updateService({
-                        id: selectedService._id,
-                        data: {
-                          name: newServiceName,
-                          type: newServiceType as any,
-                          description: newServiceDescription,
-                          status: selectedService.status,
-                        },
-                      })
-                    );
-                  } else {
-                    dispatch(
-                      addService({
+        <FormDialog
+          open={openServiceDialog}
+          onOpenChange={() => {
+            setOpenServiceDialog(false);
+            setSelectedService(null); // reset when closing
+          }}
+          title={selectedService ? "Edit Service" : "Add Service"}
+        >
+          <div className="space-y-4">
+            <Input
+              placeholder="Service name"
+              value={newServiceName}
+              onChange={(e) => setNewServiceName(e.target.value)}
+            />
+            <Input
+              placeholder="Type (airtime, data, electricity, etc.)"
+              value={newServiceType}
+              onChange={(e) => setNewServiceType(e.target.value)}
+            />
+            <Input
+              placeholder="Description"
+              value={newServiceDescription}
+              onChange={(e) => setNewServiceDescription(e.target.value)}
+            />
+          </div>
+          <div className="mt-4 flex justify-end">
+            <Button
+              onClick={() => {
+                if (selectedService) {
+                  dispatch(
+                    updateService({
+                      id: selectedService._id,
+                      data: {
                         name: newServiceName,
                         type: newServiceType as any,
                         description: newServiceDescription,
-                        status: true,
-                      })
-                    );
-                  }
+                        status: selectedService.status,
+                      },
+                    })
+                  );
+                } else {
+                  dispatch(
+                    addService({
+                      name: newServiceName,
+                      type: newServiceType as any,
+                      description: newServiceDescription,
+                      status: true,
+                    })
+                  );
+                }
 
-                  setOpenServiceDialog(false);
-                  setSelectedService(null);
-                  setNewServiceName("");
-                  setNewServiceType("airtime");
-                  setNewServiceDescription("");
-                }}
-              >
-                {selectedService ? "Update" : "Add"}
-              </Button>
-            </div>
-          </FormDialog>
+                setOpenServiceDialog(false);
+                setSelectedService(null);
+                setNewServiceName("");
+                setNewServiceType("airtime");
+                setNewServiceDescription("");
+              }}
+            >
+              {selectedService ? "Update" : "Add"}
+            </Button>
+          </div>
+        </FormDialog>
 
-          <FormDialog
-            open={!!openDialogForService}
-            onOpenChange={() => {
-              setOpenDialogForService(null);
-              setEditingSubservice(null);
-            }}
-            title={editingSubservice ? "Edit Subservice" : "Add Subservice"}
-          >
-            {openDialogForService && (
-              <SubServiceForm
-                serviceId={openDialogForService}
-                initialValues={editingSubservice ?? undefined} // ✅ fix here
-                onSubmitSuccess={() => {
-                  setOpenDialogForService(null);
-                  setEditingSubservice(null);
-                }}
-              />
-            )}
-          </FormDialog>
-
-          <FormDialog
-            open={!!openDialogForPlan}
-            onOpenChange={() => {
-              setOpenDialogForPlan(null);
-              setEditingPlan(null);
-            }}
-            title={editingPlan ? "Edit Service Plan" : "Add Service Plan"}
-          >
-            {openDialogForPlan && (
-              <ServicePlanForm
-                subServiceId={openDialogForPlan}
-                initialValues={editingPlan ?? undefined}
-                onSubmitSuccess={() => {
-                  setOpenDialogForPlan(null);
-                  setEditingPlan(null);
-                }}
-                // onDelete={() => handleDeleteServicePlan(editingPlan?._id)}
-              />
-            )}
-          </FormDialog>
-
-          <FormDialog
-            open={!!openCategoryDialog}
-            onOpenChange={(isOpen) => {
-              if (!isOpen) {
-                setOpenCategoryDialog(false); // Close dialog when user clicks outside or presses ESC
-              }
-            }}
-            title="Add Category"
-          >
-            <CategoryProviderForm
+        <FormDialog
+          open={!!openDialogForService}
+          onOpenChange={() => {
+            setOpenDialogForService(null);
+            setEditingSubservice(null);
+          }}
+          title={editingSubservice ? "Edit Subservice" : "Add Subservice"}
+        >
+          {openDialogForService && (
+            <SubServiceForm
+              serviceId={openDialogForService}
+              initialValues={editingSubservice ?? undefined} // ✅ fix here
               onSubmitSuccess={() => {
-                setOpenCategoryDialog(false); // Close after successful submit
+                setOpenDialogForService(null);
+                setEditingSubservice(null);
               }}
             />
-          </FormDialog>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+          )}
+        </FormDialog>
+
+        <FormDialog
+          open={!!openDialogForPlan}
+          onOpenChange={() => {
+            setOpenDialogForPlan(null);
+            setEditingPlan(null);
+          }}
+          title={editingPlan ? "Edit Service Plan" : "Add Service Plan"}
+        >
+          {openDialogForPlan && (
+            <ServicePlanForm
+              subServiceId={openDialogForPlan}
+              initialValues={editingPlan ?? undefined}
+              onSubmitSuccess={() => {
+                setOpenDialogForPlan(null);
+                setEditingPlan(null);
+              }}
+              // onDelete={() => handleDeleteServicePlan(editingPlan?._id)}
+            />
+          )}
+        </FormDialog>
+
+        <FormDialog
+          open={!!openCategoryDialog}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setOpenCategoryDialog(false); // Close dialog when user clicks outside or presses ESC
+            }
+          }}
+          title="Add Category"
+        >
+          <CategoryProviderForm
+            onSubmitSuccess={() => {
+              setOpenCategoryDialog(false); // Close after successful submit
+            }}
+          />
+        </FormDialog>
+      </main>
+    </AdminLayout>
   );
 }
