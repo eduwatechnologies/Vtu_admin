@@ -48,6 +48,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import { CategoryProviderForm } from "./forms/categoryProvider";
 import { AdminLayout } from "@/components/admin-layout";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function ServicesPage() {
   const toast = useToast();
@@ -161,131 +162,162 @@ export default function ServicesPage() {
             className="max-w-sm"
             onChange={handleSearch}
           />
-          <div className=" gap-x-4">
+          <div className="gap-x-4">
             <Button onClick={() => setOpenServiceDialog(true)} className="mr-8">
               Add Service
             </Button>
-
-            {/* <Button onClick={() => handleCategoryAdding()}>
-                Data Catgories
-              </Button> */}
+            <Button onClick={() => handleCategoryAdding()}>
+              Data Categories
+            </Button>
           </div>
         </div>
 
-        {/* Table Section */}
-        {isLoading ? (
-          <p>Loading services...</p>
-        ) : (
-          <div className="border rounded-lg overflow-hidden shadow-sm">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/30">
-                  <TableHead></TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  {/* <TableHead>Status</TableHead> */}
-                  <TableHead>Description</TableHead>
-                  <TableHead className="text-center">Subservices</TableHead>
-                  <TableHead className="text-center">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredServices.map((service) => {
-                  const expanded = expandedServiceId === service._id;
-                  return (
-                    <>
-                      <TableRow key={service._id} className="hover:bg-muted/20">
-                        <TableCell>
-                          <ExpandToggleButton
-                            expanded={expanded}
-                            onToggle={() => toggleExpandService(service._id)}
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {service.name}
-                        </TableCell>
-                        <TableCell>{service.type}</TableCell>
-                        {/* <TableCell>
-                            <Switch checked={service.status} disabled />
-                          </TableCell> */}
-                        <TableCell>{service.description || "-"}</TableCell>
-                        <TableCell className="text-center">
-                          {service?.subServices?.length}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setSelectedService(service);
-                                  setNewServiceName(service.name);
-                                  setNewServiceType(service.type);
-                                  setNewServiceDescription(
-                                    service.description || ""
-                                  );
-                                  setOpenServiceDialog(true);
-                                }}
-                              >
-                                Edit
-                              </DropdownMenuItem>
+        {/* Tabs for service types */}
+        <Tabs defaultValue="all" className="w-full mt-4">
+          <TabsList className="flex flex-wrap">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="airtime">Airtime</TabsTrigger>
+            <TabsTrigger value="data">Data</TabsTrigger>
+            <TabsTrigger value="tv">TV</TabsTrigger>
+            <TabsTrigger value="electricity">Electricity</TabsTrigger>
+            <TabsTrigger value="education">Education</TabsTrigger>
+          </TabsList>
 
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  dispatch(deleteService(service._id));
-                                }}
-                              >
-                                Delete
-                              </DropdownMenuItem>
-
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  setOpenDialogForService(service._id)
-                                }
-                              >
-                                Add Subservice
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
+          {["all", "airtime", "data", "tv", "electricity", "education"].map(
+            (type) => (
+              <TabsContent key={type} value={type}>
+                <div className="border rounded-lg overflow-hidden shadow-sm mt-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/30">
+                        <TableHead></TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-center">
+                          Subservices
+                        </TableHead>
+                        <TableHead className="text-center">Actions</TableHead>
                       </TableRow>
+                    </TableHeader>
 
-                      {/* Expandable sub-services table */}
-                      {expanded && service.subServices?.length > 0 && (
-                        <TableRow className="bg-muted/10">
-                          <TableCell colSpan={7}>
-                            <div className="p-4 space-y-6">
-                              <h3 className="font-semibold">Subservices</h3>
-                              <div className="border rounded-lg overflow-hidden">
-                                <SubServicesTable
-                                  service={service}
-                                  subServices={service.subServices}
-                                  expandedSubServiceId={expandedSubServiceId}
-                                  onToggleSubService={setExpandedSubServiceId}
-                                  onToggleStatus={handleToggleStatus}
-                                  onDelete={handleDeleteSubService}
-                                  onEdit={handleEditSubService}
-                                  onAddPlan={handleAddPlan}
-                                  onEditPlan={handleEditPlan}
-                                  onDeletePlan={handleDeleteServicePlan}
-                                />
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+                    <TableBody>
+                      {filteredServices
+                        .filter(
+                          (service) => type === "all" || service.type === type
+                        )
+                        .map((service) => {
+                          const expanded = expandedServiceId === service._id;
+                          return (
+                            <>
+                              <TableRow
+                                key={service._id}
+                                className="hover:bg-muted/20"
+                              >
+                                <TableCell>
+                                  <ExpandToggleButton
+                                    expanded={expanded}
+                                    onToggle={() =>
+                                      toggleExpandService(service._id)
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                  {service.name}
+                                </TableCell>
+                                <TableCell>{service.type}</TableCell>
+                                <TableCell>
+                                  {service.description || "-"}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {service?.subServices?.length}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="icon">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuLabel>
+                                        Actions
+                                      </DropdownMenuLabel>
+                                      <DropdownMenuItem
+                                        onClick={() => {
+                                          setSelectedService(service);
+                                          setNewServiceName(service.name);
+                                          setNewServiceType(service.type);
+                                          setNewServiceDescription(
+                                            service.description || ""
+                                          );
+                                          setOpenServiceDialog(true);
+                                        }}
+                                      >
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          dispatch(deleteService(service._id))
+                                        }
+                                      >
+                                        Delete
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          setOpenDialogForService(service._id)
+                                        }
+                                      >
+                                        Add Subservice
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </TableCell>
+                              </TableRow>
+
+                              {/* Expandable subservices */}
+                              {expanded && service.subServices?.length > 0 && (
+                                <TableRow className="bg-muted/10">
+                                  <TableCell colSpan={7}>
+                                    <div className="p-4 space-y-6">
+                                      <h3 className="font-semibold">
+                                        Subservices
+                                      </h3>
+                                      <div className="border rounded-lg overflow-hidden">
+                                        <SubServicesTable
+                                          service={service}
+                                          subServices={service.subServices}
+                                          expandedSubServiceId={
+                                            expandedSubServiceId
+                                          }
+                                          onToggleSubService={
+                                            setExpandedSubServiceId
+                                          }
+                                          onToggleStatus={handleToggleStatus}
+                                          onDelete={handleDeleteSubService}
+                                          onEdit={handleEditSubService}
+                                          onAddPlan={handleAddPlan}
+                                          onEditPlan={handleEditPlan}
+                                          onDeletePlan={handleDeleteServicePlan}
+                                        />
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </>
+                          );
+                        })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+            )
+          )}
+        </Tabs>
+
+        {/* Dialogs */}
+        {/* ... keep your existing dialogs here */}
 
         <FormDialog
           open={openServiceDialog}

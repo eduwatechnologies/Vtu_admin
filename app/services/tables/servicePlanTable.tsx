@@ -37,7 +37,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 
-
 export function PlansTable({
   plans,
   subName,
@@ -94,7 +93,7 @@ export function PlansTable({
                         onValueChange={(val) => {
                           dispatch(
                             updateCategoryProvider({
-                              id:c._id,
+                              id: c._id,
                               provider: val,
                             }) as any
                           );
@@ -124,13 +123,15 @@ export function PlansTable({
                           dispatch(
                             updateCategoryProvider({
                               ...c,
+                              id: c._id,
                               status: val,
+                              provider: c.provider,
                             }) as any
                           );
 
                           toast({
                             title: "Provider Status Updated",
-                            description: `Provider for ${c.category} has been ${
+                            description: `Provider for ${val} has been ${
                               val ? "enabled" : "disabled"
                             }.`,
                             duration: 3000,

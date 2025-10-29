@@ -48,7 +48,7 @@ export default function LoginPage() {
           title: "Success",
           description: "Login successful! Redirecting...",
         });
-        router.push("/dashboard");
+        router.push("/");
       }
     } catch (error) {
       toast({
@@ -72,7 +72,7 @@ export default function LoginPage() {
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-center text-blue-600">
-              Almaleek
+            Payonce
             </CardTitle>
             <CardDescription className="text-center">
               Enter your credentials to access your account
