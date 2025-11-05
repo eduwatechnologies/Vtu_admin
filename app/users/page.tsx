@@ -3,9 +3,6 @@
 import type React from "react";
 
 import { useEffect } from "react";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { DashboardHeader } from "@/components/dashboard-header";
 import { UsersTable } from "@/components/users-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +13,6 @@ import {
   RefundUser,
   setSearchQuery,
 } from "@/lib/redux/slices/userSlice";
-import { toast } from "@/components/ui/use-toast";
 import { AdminLayout } from "@/components/admin-layout";
 
 export default function UsersPage() {

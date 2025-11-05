@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { DashboardHeader } from "@/components/dashboard-header";
+
 import { TransactionsTable } from "@/components/transactions-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -35,10 +33,12 @@ import { AdminLayout } from "@/components/admin-layout";
 
 export default function TransactionsPage() {
   const dispatch = useAppDispatch();
-  const { currentFilter } = useAppSelector((state) => state.transactions);
+  const { currentFilter, currentPage } = useAppSelector(
+    (state) => state.transactions
+  );
 
   useEffect(() => {
-    dispatch(fetchTransactions());
+    dispatch(fetchTransactions(currentPage));
   }, [dispatch]);
 
   const handleFilterChange = (key: string, value: any) => {

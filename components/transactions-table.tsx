@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+
 import {
   Card,
   CardContent,
@@ -27,7 +29,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Eye } from "lucide-react";
-import { useAppSelector } from "@/lib/redux/hooks";
 import {
   Dialog,
   DialogContent,
@@ -36,12 +37,15 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { fetchTransactions } from "@/lib/redux/slices/transactionSlice";
 
 // badge formatter
 const getStatusBadge = (status: string) => {
   switch (status) {
     case "success":
       return <Badge className="bg-green-100 text-green-700">Success</Badge>;
+    case "refund":
+      return <Badge className="bg-green-100 text-green-700">Refund</Badge>;
     case "failed":
       return <Badge className="bg-red-100 text-red-700">Failed</Badge>;
     default:
@@ -50,27 +54,22 @@ const getStatusBadge = (status: string) => {
 };
 
 export function TransactionsTable() {
-  const { filteredTransactions, isLoading } = useAppSelector(
-    (state) => state.transactions
-  );
+  const dispatch = useAppDispatch();
+  const {
+    filteredTransactions,
+    isLoading,
+    currentPage,
+    totalPages,
+    totalTransactions,
+  } = useAppSelector((state) => state.transactions);
 
   const [selectedTx, setSelectedTx] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const transactionsPerPage = 100;
-
-  const indexOfLast = currentPage * transactionsPerPage;
-  const indexOfFirst = indexOfLast - transactionsPerPage;
-  const currentTransactions = filteredTransactions.slice(
-    indexOfFirst,
-    indexOfLast
-  );
-
-  const totalPages = Math.ceil(
-    filteredTransactions.length / transactionsPerPage
-  );
+  // ✅ Fetch data when page changes
+  useEffect(() => {
+    dispatch(fetchTransactions(currentPage));
+  }, [dispatch, currentPage]);
 
   const openModal = (tx: any) => {
     setSelectedTx(tx);
@@ -104,7 +103,8 @@ export function TransactionsTable() {
         <CardHeader>
           <CardTitle>Transaction History</CardTitle>
           <CardDescription>
-            Showing {filteredTransactions.length} transactions
+            Showing {filteredTransactions.length} of {totalTransactions} total
+            transactions
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -124,7 +124,7 @@ export function TransactionsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentTransactions.map((transaction) => (
+              {filteredTransactions.map((transaction) => (
                 <TableRow key={transaction._id}>
                   <TableCell className="font-medium">
                     TRNS{transaction._id.slice(-5)}
@@ -139,9 +139,13 @@ export function TransactionsTable() {
                   <TableCell className="capitalize">
                     {transaction.network || "Fund"}
                   </TableCell>
-                  <TableCell>{transaction.amount}</TableCell>
-                  <TableCell>{transaction.mobile_no}</TableCell>
-                  <TableCell>{getStatusBadge(transaction.status)}</TableCell>
+                  <TableCell>₦{transaction.amount?.toLocaleString()}</TableCell>
+                  <TableCell>{transaction?.mobile_no || ""}</TableCell>
+                  <TableCell>
+                    {transaction.status === "failed" &&
+                      getStatusBadge("refund")}
+                    {getStatusBadge(transaction.status)}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(
                       transaction.transaction_date
@@ -171,37 +175,86 @@ export function TransactionsTable() {
             </TableBody>
           </Table>
 
-          {/* Pagination controls */}
-          <div className="flex justify-between items-center mt-4">
-            <Button
-              variant="outline"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => prev - 1)}
-            >
-              Previous
-            </Button>
+          {/* ✅ Pagination Controls (server-side) */}
+          <div className="w-full flex justify-center items-center mt-6">
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Previous Button */}
+              <Button
+                variant="outline"
+                disabled={currentPage === 1}
+                onClick={() => dispatch(fetchTransactions(currentPage - 1))}
+              >
+                Previous
+              </Button>
 
-            <div className="flex gap-2 flex-wrap">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    variant={page === currentPage ? "default" : "outline"}
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </Button>
-                )
-              )}
+              {/* Dynamic Page Buttons */}
+              {(() => {
+                const pages = [];
+                const maxButtons = 5; // how many visible pages around the current
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+
+                // Always show the first page
+                if (startPage > 1) {
+                  pages.push(
+                    <Button
+                      key={1}
+                      variant={currentPage === 1 ? "default" : "outline"}
+                      onClick={() => dispatch(fetchTransactions(1))}
+                    >
+                      1
+                    </Button>
+                  );
+
+                  if (startPage > 2) {
+                    pages.push(<span key="start-ellipsis">...</span>);
+                  }
+                }
+
+                // Middle pages
+                for (let page = startPage; page <= endPage; page++) {
+                  pages.push(
+                    <Button
+                      key={page}
+                      variant={page === currentPage ? "default" : "outline"}
+                      onClick={() => dispatch(fetchTransactions(page))}
+                    >
+                      {page}
+                    </Button>
+                  );
+                }
+
+                // Always show the last page
+                if (endPage < totalPages) {
+                  if (endPage < totalPages - 1) {
+                    pages.push(<span key="end-ellipsis">...</span>);
+                  }
+
+                  pages.push(
+                    <Button
+                      key={totalPages}
+                      variant={
+                        currentPage === totalPages ? "default" : "outline"
+                      }
+                      onClick={() => dispatch(fetchTransactions(totalPages))}
+                    >
+                      {totalPages}
+                    </Button>
+                  );
+                }
+
+                return pages;
+              })()}
+
+              {/* Next Button */}
+              <Button
+                variant="outline"
+                disabled={currentPage === totalPages}
+                onClick={() => dispatch(fetchTransactions(currentPage + 1))}
+              >
+                Next
+              </Button>
             </div>
-
-            <Button
-              variant="outline"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-            >
-              Next
-            </Button>
           </div>
         </CardContent>
       </Card>

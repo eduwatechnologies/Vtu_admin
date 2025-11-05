@@ -1,10 +1,5 @@
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/app/api/auth/axiosInstance";
-import {
-  createSlice,
-  createAsyncThunk,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-import axios from "axios";
 
 interface Transaction {
   _id: string;
@@ -13,28 +8,14 @@ interface Transaction {
     email: string;
     phone: string;
   };
-  transaction_type: string; // previously `type`
-  network?: string; // if applicable
-  amount: number;
-  status: "completed" | "pending" | "failed" | "delivered"; // include "delivered" if used
-  raw_response: string;
   service: string;
-  transaction_date: string; // ISO string from VTpass response
-  request_id?: string; // if you still need this for tracking
-  response_data: {
-    request_id?: string;
-    accountNumber?: string | null;
-    amount?: number;
-    status?: string;
-    product_name?: string;
-    transaction_date?: string;
-    token?: string | null;
-    phone?: string;
-    dataName?: string | null;
-  };
-  product_name: string;
+  network?: string;
+  amount: number;
+  status: string;
+  transaction_date: string;
+  raw_response?: any;
+  mobile_no?: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 interface TransactionFilter {
@@ -49,6 +30,9 @@ interface TransactionState {
   transactions: Transaction[];
   filteredTransactions: Transaction[];
   currentFilter: TransactionFilter;
+  currentPage: number;
+  totalPages: number;
+  totalTransactions: number;
   isLoading: boolean;
   error: string | null;
 }
@@ -57,24 +41,27 @@ const initialFilter: TransactionFilter = {
   user: "",
   type: "all",
   status: "all",
-  startDate: undefined,
-  endDate: undefined,
 };
 
 const initialState: TransactionState = {
   transactions: [],
   filteredTransactions: [],
   currentFilter: initialFilter,
+  currentPage: 1,
+  totalPages: 1,
+  totalTransactions: 0,
   isLoading: false,
   error: null,
 };
 
-// ✅ Fetch all transactions
+// ✅ Fetch paginated transactions
 export const fetchTransactions = createAsyncThunk(
-  "transactions/fetchAll",
-  async (_, { rejectWithValue }) => {
+  "transactions/fetchPaginated",
+  async (page: number = 1, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/transactions/transactions");
+      const response = await axiosInstance.get(
+        `/transactions/transactions?page=${page}&limit=100`
+      );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Failed to fetch");
@@ -90,60 +77,23 @@ const transactionSlice = createSlice({
       state,
       action: PayloadAction<Partial<TransactionFilter>>
     ) => {
-      state.currentFilter = {
-        ...state.currentFilter,
-        ...action.payload,
-      };
+      state.currentFilter = { ...state.currentFilter, ...action.payload };
+      state.filteredTransactions = state.transactions.filter((tx) => {
+        const { user, type, status, startDate, endDate } = state.currentFilter;
 
-      // Apply filters
-      state.filteredTransactions = state.transactions.filter((transaction) => {
-        // Filter by user
         if (
-          state.currentFilter.user &&
-          !transaction.userId.email
-            .toLowerCase()
-            .includes(state.currentFilter.user.toLowerCase())
+          user &&
+          !tx.userId.email.toLowerCase().includes(user.toLowerCase())
         ) {
           return false;
         }
 
-        // Filter by type
-        if (
-          state.currentFilter.type !== "all" &&
-          transaction.service !== state.currentFilter.type
-        ) {
-          return false;
-        }
+        if (type !== "all" && tx.service !== type) return false;
+        if (status !== "all" && tx.status !== status) return false;
 
-        // Filter by status
-        if (
-          state.currentFilter.status !== "all" &&
-          transaction.status !== state.currentFilter.status
-        ) {
-          return false;
-        }
-
-        // Filter by date range
-        if (state.currentFilter.startDate || state.currentFilter.endDate) {
-          const txDate = new Date(transaction.transaction_date);
-
-          if (
-            state.currentFilter.startDate &&
-            txDate < state.currentFilter.startDate
-          ) {
-            return false;
-          }
-
-          if (state.currentFilter.endDate) {
-            // Set end date to end of day
-            const endOfDay = new Date(state.currentFilter.endDate);
-            endOfDay.setHours(23, 59, 59, 999);
-
-            if (txDate > endOfDay) {
-              return false;
-            }
-          }
-        }
+        const txDate = new Date(tx.transaction_date);
+        if (startDate && txDate < startDate) return false;
+        if (endDate && txDate > endDate) return false;
 
         return true;
       });
@@ -161,12 +111,16 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.transactions = action.payload;
-        state.filteredTransactions = action.payload;
+        state.transactions = action.payload.transactions;
+        state.filteredTransactions = action.payload.transactions;
+        state.currentPage = action.payload.currentPage;
+        state.totalPages = action.payload.totalPages;
+        state.totalTransactions = action.payload.totalTransactions;
       })
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message || "Failed to fetch transactions";
+        state.error =
+          (action.payload as string) || "Failed to fetch transactions";
       });
   },
 });
