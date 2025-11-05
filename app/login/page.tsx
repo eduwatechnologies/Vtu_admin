@@ -40,7 +40,7 @@ export default function LoginPage() {
       if (result?.error) {
         toast({
           title: "Error",
-          description: "Invalid email or password.",
+          description: "Invalid email or password..",
           variant: "destructive",
         });
       } else {
@@ -72,7 +72,7 @@ export default function LoginPage() {
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-center text-blue-600">
-            Payonce
+              Payonce
             </CardTitle>
             <CardDescription className="text-center">
               Enter your credentials to access your account

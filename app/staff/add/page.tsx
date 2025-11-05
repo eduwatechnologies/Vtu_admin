@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { DashboardHeader } from "@/components/dashboard-header";
+
 import { StaffForm } from "@/components/staff/staff-form";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { addStaffMember, logActivity } from "@/lib/redux/slices/staffSlice";
@@ -18,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ShieldAlert } from "lucide-react";
+import { AdminLayout } from "@/components/admin-layout";
 
 export default function AddStaffPage() {
   const dispatch = useAppDispatch();
@@ -65,44 +64,40 @@ export default function AddStaffPage() {
   };
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <DashboardHeader />
-        <main className="flex-1 space-y-6 p-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Add Staff Member
-            </h1>
-            <p className="text-muted-foreground">Create a new staff account</p>
-          </div>
+    <AdminLayout>
+      <main className="flex-1 space-y-6 p-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Add Staff Member
+          </h1>
+          <p className="text-muted-foreground">Create a new staff account</p>
+        </div>
 
-          <PermissionGuard
-            requiredPermission="perm_staff_manage"
-            fallback={
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <ShieldAlert className="mr-2 h-5 w-5 text-red-500" />
-                    Access Denied
-                  </CardTitle>
-                  <CardDescription>
-                    You don't have permission to add staff members.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Please contact an administrator if you need access to this
-                    feature.
-                  </p>
-                </CardContent>
-              </Card>
-            }
-          >
-            <StaffForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
-          </PermissionGuard>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+        <PermissionGuard
+          requiredPermission="perm_staff_manage"
+          fallback={
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <ShieldAlert className="mr-2 h-5 w-5 text-red-500" />
+                  Access Denied
+                </CardTitle>
+                <CardDescription>
+                  You don't have permission to add staff members.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>
+                  Please contact an administrator if you need access to this
+                  feature.
+                </p>
+              </CardContent>
+            </Card>
+          }
+        >
+          <StaffForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+        </PermissionGuard>
+      </main>
+    </AdminLayout>
   );
 }
