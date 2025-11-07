@@ -67,20 +67,24 @@ export const createCategoryProvider = createAsyncThunk<
 // 📌 Update category provider
 export const updateCategoryProvider = createAsyncThunk<
   CategoryProvider,
-  { id: string; provider: string },
+  { id: string; provider: string; status?: boolean },
   { rejectValue: string }
->("categoryProvider/update", async ({ id, provider }, { rejectWithValue }) => {
-  try {
-    const res = await axiosInstance.put(`/category-providers/${id}`, {
-      provider,
-    });
-    return res.data as CategoryProvider;
-  } catch (err: any) {
-    return rejectWithValue(
-      err.response?.data?.error || "Failed to update category provider"
-    );
+>(
+  "categoryProvider/update",
+  async ({ id, provider, status }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.put(`/category-providers/${id}`, {
+        provider,
+        status,
+      });
+      return res.data as CategoryProvider;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to update category provider"
+      );
+    }
   }
-});
+);
 
 // 📌 Delete category provider
 export const deleteCategoryProvider = createAsyncThunk<

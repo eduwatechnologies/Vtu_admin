@@ -100,7 +100,7 @@ export function PlansTable({
 
                           toast({
                             title: "Provider Updated",
-                            description: `Provider for ${c.provider} changed to ${val}.`,
+                            description: `Provider for ${c?.provider} changed to ${val}.`,
                             duration: 3000,
                           });
                         }}
@@ -131,7 +131,7 @@ export function PlansTable({
 
                           toast({
                             title: "Provider Status Updated",
-                            description: `Provider for ${val} has been ${
+                            description: `Provider for ${c.provider} has been ${
                               val ? "enabled" : "disabled"
                             }.`,
                             duration: 3000,

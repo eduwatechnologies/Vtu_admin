@@ -129,12 +129,53 @@ export function UsersTable() {
     }
   };
 
+  // const handleResetSubmit = async () => {
+  //   try {
+  //     if (!selectedUser?._id) {
+  //       toast({
+  //         title: "User not selected",
+  //         description: "Please select a user before resetting.",
+  //       });
+  //       return;
+  //     }
+
+  //     if (resetType === "password") {
+  //       await dispatch(
+  //         updatePassword({
+  //           userId: selectedUser._id,
+  //           newPassword: "1111111111",
+  //         })
+  //       ).unwrap();
+  //     } else {
+  //       await dispatch(
+  //         updatePin({ userId: selectedUser._id, newpin: "2323" })
+  //       ).unwrap();
+  //     }
+
+  //     toast({
+  //       title: "Wallet Updated",
+  //       description: `₦${amount} ${
+  //         transactionType === "credit" ? "added to" : "removed from"
+  //       } wallet.`,
+  //     });
+  //     setResetDialogOpen(false);
+  //   } catch (error) {
+  //     toast({
+  //       title: "Update failed",
+  //       description: "Could not update wallet balance.",
+  //     });
+  //     console.error(error);
+  //   }
+  // };
+
+  // PAGINATION
+
   const handleResetSubmit = async () => {
     try {
       if (!selectedUser?._id) {
         toast({
           title: "User not selected",
-          description: "Please select a user before resetting.",
+          description: "Please select a user before resetting credentials.",
         });
         return;
       }
@@ -143,32 +184,43 @@ export function UsersTable() {
         await dispatch(
           updatePassword({
             userId: selectedUser._id,
-            newPassword: "1111111111",
+            newPassword: "100001",
           })
         ).unwrap();
+
+        toast({
+          title: "Password Reset Successful",
+          description: `Password for ${
+            selectedUser?.firstName || "this user"
+          } has been reset to default.`,
+        });
       } else {
         await dispatch(
-          updatePin({ userId: selectedUser._id, newpin: "2323" })
+          updatePin({
+            userId: selectedUser._id,
+            newpin: "1001",
+          })
         ).unwrap();
+
+        toast({
+          title: "PIN Reset Successful",
+          description: `Transaction PIN for ${
+            selectedUser?.firstName || "this user"
+          } has been reset to default.`,
+        });
       }
 
-      toast({
-        title: "Wallet Updated",
-        description: `₦${amount} ${
-          transactionType === "credit" ? "added to" : "removed from"
-        } wallet.`,
-      });
       setResetDialogOpen(false);
     } catch (error) {
-      toast({
-        title: "Update failed",
-        description: "Could not update wallet balance.",
-      });
       console.error(error);
+      toast({
+        title: "Reset Failed",
+        description:
+          "An error occurred while resetting the user’s credentials.",
+      });
     }
   };
 
-  // PAGINATION
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 100;
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);

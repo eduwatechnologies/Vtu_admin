@@ -29,7 +29,6 @@ import { switchProvider } from "@/lib/redux/slices/service/serviceThunk";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { ConfirmDeleteDialog } from "@/components/commons/alert/confirm";
 
-
 export function SubServicesTable({
   service,
   subServices,
@@ -44,11 +43,9 @@ export function SubServicesTable({
 }: any) {
   const dispatch = useAppDispatch();
 
-const handleProviderChange = (value: string, subId: string) => {
-  dispatch(switchProvider({ id: subId, provider: value }));
-
-};
-
+  const handleProviderChange = (value: string, subId: string) => {
+    dispatch(switchProvider({ id: subId, provider: value }));
+  };
 
   return (
     <div className="space-y-8">
