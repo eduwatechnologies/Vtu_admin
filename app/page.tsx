@@ -24,7 +24,7 @@ export default function Dashboard() {
   const { overall, breakdown, daily, isLoading } = useSelector(
     (state: RootState) => state.statistics
   );
-  const { transactions } = useSelector(
+  const { transactions, currentPage } = useSelector(
     (state: RootState) => state.transactions
   );
 
@@ -45,7 +45,7 @@ export default function Dashboard() {
       dispatch(setUser(session.user));
     }
 
-    dispatch(fetchTransactions());
+    dispatch(fetchTransactions(currentPage));
     dispatch(fetchRoles());
     dispatch(fetchPermissions());
   }, [session, dispatch]);

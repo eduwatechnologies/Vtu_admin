@@ -36,6 +36,7 @@ export function StatsCards({ overall, breakdown }: StatsCard) {
       icon: DollarSign,
       description: "From last month",
       requiredPermission: "perm_dashboard",
+
     },
     {
       title: "Total Users",
@@ -80,9 +81,7 @@ export function StatsCards({ overall, breakdown }: StatsCard) {
   const stats = [...baseStats, ...serviceStats];
 
   // ✅ Filter stats based on permissions
-  const visibleStats = stats.filter((stat) =>
-    hasPermission(stat.requiredPermission)
-  );
+  const visibleStats = stats;
 
   if (visibleStats.length === 0) {
     return (
