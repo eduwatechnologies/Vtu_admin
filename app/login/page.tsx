@@ -16,6 +16,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import logo from "../../public/logo.png";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -62,18 +64,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-purple-100">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-sm">
         <Card className="border-none shadow-none">
           <CardHeader className="space-y-1">
             <div className="flex justify-center mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
-                <Zap className="h-6 w-6" />
+              <div className="flex items-center justify-center rounded-lg  text-white">
+                <Image src={logo} alt="logo" className="h-12 w-12" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-center text-blue-600">
-              Payonce
+            <CardTitle className="text-center text-lg">
+              Welcome Back My Creator!!
             </CardTitle>
+
             <CardDescription className="text-center">
               Enter your credentials to access your account
             </CardDescription>
@@ -98,12 +101,12 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link
+                  {/* <Link
                     href="/forgot-password"
                     className="text-sm text-blue-600 hover:underline"
                   >
                     Forgot password?
-                  </Link>
+                  </Link> */}
                 </div>
                 <div className="relative">
                   <Input
@@ -130,7 +133,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full bg-purple-600 hover:bg-blue-700 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
@@ -148,7 +151,7 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
-
+        {/* 
         <div className="mt-6 text-center">
           <Link
             href="/"
@@ -156,7 +159,7 @@ export default function LoginPage() {
           >
             ← Back to home
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );
