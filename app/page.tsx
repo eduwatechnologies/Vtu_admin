@@ -59,7 +59,7 @@ export default function Dashboard() {
 
   return (
     <AdminLayout>
-      <main className="flex-1 space-y-6 p-6 bg-gray-50 dark:bg-gray-900">
+      <main className="flex-1 space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
@@ -72,7 +72,7 @@ export default function Dashboard() {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value as any)}
-            className="border rounded-md px-3 py-1 text-sm"
+            className="border rounded-lg px-3 py-3 text-sm"
           >
             <option value="all">All</option>
             <option value="day">Today</option>

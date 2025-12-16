@@ -1,65 +1,108 @@
 "use client";
 
 import {
-  ArrowDown,
-  ArrowUp,
   CreditCard,
   DollarSign,
   Smartphone,
   Users,
   Tv,
   Zap,
-  Gamepad,
+  LucideIcon,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { usePermissions } from "@/lib/rbac/permissions";
-
 import {
   OverallStats,
   ServiceBreakdown,
 } from "@/lib/redux/slices/statisticSlice";
 
-interface StatsCard {
-  overall: OverallStats;
-  breakdown: ServiceBreakdown[];
+/* ---------------- UI CARD ---------------- */
+
+interface StatUIProps {
+  title: string;
+  value: string;
+  change: string;
+  changeType: "positive" | "negative";
+  icon: LucideIcon;
+  delay?: number;
 }
 
-export function StatsCards({ overall, breakdown }: StatsCard) {
+function StatCard({
+  title,
+  value,
+  change,
+  changeType,
+  icon: Icon,
+  delay = 0,
+}: StatUIProps) {
+  return (
+    <div
+      className="rounded-xl bg-card p-6 shadow-card transition-all hover:-translate-y-1"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-semibold text-muted-foreground">
+          {title}
+        </span>
+        <div className="p-2 bg-purple-500  rounded-md">
+          <Icon className="h-5 w-5 text-white " />
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <h3 className="text-2xl font-bold">{value}</h3>
+        <p
+          className={cn(
+            "mt-1 text-sm",
+            changeType === "positive" ? "text-success" : "text-destructive"
+          )}
+        >
+          {changeType === "positive" ? "↑" : "↓"} {change}
+          <span className="ml-1 text-muted-foreground">From last month</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- CONTAINER ---------------- */
+
+interface StatsCardsProps {
+  overall: OverallStats; // ✅ guaranteed by your conditional render
+  breakdown?: ServiceBreakdown[]; // ✅ may be undefined
+}
+
+export function StatsCards({ overall, breakdown = [] }: StatsCardsProps) {
   const { hasPermission } = usePermissions();
 
   const baseStats = [
     {
       title: "Total Account Balance",
-      value: `₦${overall?.totalUserBalance?.toLocaleString() || 0}`,
-      change: "+12.5%",
-      changeType: "increase" as const,
+      value: `₦${overall.totalUserBalance?.toLocaleString() || 0}`,
+      change: "12.5%",
+      changeType: "positive" as const,
       icon: DollarSign,
-      description: "From last month",
-      requiredPermission: "perm_dashboard",
-
+      permission: "perm_dashboard",
     },
     {
       title: "Total Users",
-      value: overall?.totalUsers?.toLocaleString() || "0",
-      change: "+8.2%",
-      changeType: "increase" as const,
+      value: overall.totalUsers?.toLocaleString() || "0",
+      change: "8.2%",
+      changeType: "positive" as const,
       icon: Users,
-      description: "Active users",
-      requiredPermission: "perm_users_view",
+      permission: "perm_users_view",
     },
     {
       title: "Transactions",
-      value: overall?.totalTransactions?.toLocaleString() || "0",
-      change: "+23.1%",
-      changeType: "increase" as const,
+      value: overall.totalTransactions?.toLocaleString() || "0",
+      change: "23.1%",
+      changeType: "positive" as const,
       icon: CreditCard,
-      description: "This month",
-      requiredPermission: "perm_transactions_view",
+      permission: "perm_transactions_view",
     },
   ];
 
-  // Map breakdown dynamically
-  const serviceIcons: Record<string, any> = {
+  const serviceIcons: Record<string, LucideIcon> = {
     airtime: Smartphone,
     data: Smartphone,
     tv: Tv,
@@ -67,63 +110,39 @@ export function StatsCards({ overall, breakdown }: StatsCard) {
   };
 
   const serviceStats = breakdown
-    .filter((b) => b._id.toLowerCase() !== "wallet") // omit wallet sales
+    .filter((b) => b._id?.toLowerCase() !== "wallet")
     .map((b) => ({
       title: `${b._id} Sales`,
       value: `₦${b.totalAmount?.toLocaleString() || 0}`,
-      change: "-2.4%", // placeholder until you calculate real %
-      changeType: "decrease" as const,
+      change: "2.4%",
+      changeType: "negative" as const,
       icon: serviceIcons[b._id] || CreditCard,
-      description: "From last month",
-      requiredPermission: "perm_services_view",
+      permission: "perm_services_view",
     }));
 
+  // const stats = [...baseStats, ...serviceStats].filter(
+  //   (s) => !s.permission || hasPermission(s.permission)
+  // );
   const stats = [...baseStats, ...serviceStats];
 
-  // ✅ Filter stats based on permissions
-  const visibleStats = stats;
-
-  if (visibleStats.length === 0) {
+  if (stats.length === 0) {
     return (
-      <div className="grid gap-4 md:grid-cols-1">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Welcome</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">VTU Admin</div>
-            <div className="text-xs text-muted-foreground">
-              Your access is limited. Contact an administrator for more
-              permissions.
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4">
+        <StatCard
+          title="Welcome"
+          value="VTU Admin"
+          change="Limited access"
+          changeType="negative"
+          icon={Users}
+        />
       </div>
     );
   }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {visibleStats.map((stat) => (
-        <Card key={stat.title}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            <stat.icon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              {stat.changeType === "increase" ? (
-                <ArrowUp className="mr-1 h-3 w-3 text-blue-600" />
-              ) : (
-                <ArrowDown className="mr-1 h-3 w-3 text-blue-600" />
-              )}
-              <span className="text-blue-600">{stat.change}</span>
-              <span className="ml-1">{stat.description}</span>
-            </div>
-          </CardContent>
-        </Card>
+      {stats.map((stat, i) => (
+        <StatCard key={stat.title} {...stat} delay={i * 80} />
       ))}
     </div>
   );

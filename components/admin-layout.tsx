@@ -14,7 +14,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <ProtectedRoute>
-      <div className="relative min-h-screen bg-gray-50">
+      <div className="relative min-h-screen">
         <div className="hidden md:block">
           <div
             className={cn(

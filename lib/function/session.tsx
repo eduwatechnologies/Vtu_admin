@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
+  console.log("Session in ProtectedRoute:", session);
   const router = useRouter();
 
   if (status === "loading") return null; // or spinner
 
-  if (!session) {
-    router.push("/auth/login");
+  if (!session || !session.accessToken) {
+    router.replace("/auth/login");
     return null;
   }
 

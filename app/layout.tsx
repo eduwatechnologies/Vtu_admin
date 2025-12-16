@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-gray-50">
+      <body className="">
         <AuthProvider>
           <ReduxProvider>{children}</ReduxProvider>
           <Toaster />
